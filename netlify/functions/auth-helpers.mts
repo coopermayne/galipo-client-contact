@@ -8,12 +8,12 @@ export interface AuthPayload {
   exp: number
 }
 
+// Default JWT secret - override with JWT_SECRET env var for production
+const DEFAULT_JWT_SECRET = 'galipo-client-contact-jwt-secret-2026'
+
 // Get JWT secret from environment (server-side only, no VITE_ prefix)
 function getJwtSecret(): Uint8Array {
-  const secret = process.env.JWT_SECRET
-  if (!secret) {
-    throw new Error('JWT_SECRET environment variable is not set')
-  }
+  const secret = process.env.JWT_SECRET || DEFAULT_JWT_SECRET
   return new TextEncoder().encode(secret)
 }
 
@@ -121,12 +121,16 @@ export async function requireAuth(
   }
 }
 
+// Client password prefixes - matches CLIENTS config in App.jsx
+// Add new clients here when you add them to the frontend
+const CLIENT_PASSWORD_PREFIXES: Record<string, string> = {
+  'alvarado-pool': 'Pool',
+}
+
 // Validate passwords against environment variables
-// CLIENT_PASSWORD_PREFIXES should be JSON like: {"alvarado-pool":"Pool"}
 export function validatePassword(password: string, clientSlug?: string): { valid: boolean; role: 'attorney' | 'client' } | null {
-  const attorneyPassword = process.env.ATTY_PASSWORD
+  const attorneyPassword = process.env.ATTORNEY_PASSWORD
   const clientPasswordSuffix = process.env.CLIENT_PASSWORD_SUFFIX
-  const clientPrefixesJson = process.env.CLIENT_PASSWORD_PREFIXES
 
   // Check attorney password first
   if (attorneyPassword && password === attorneyPassword) {
@@ -134,19 +138,14 @@ export function validatePassword(password: string, clientSlug?: string): { valid
   }
 
   // Check client password (requires clientSlug)
-  if (clientSlug && clientPasswordSuffix && clientPrefixesJson) {
-    try {
-      const prefixes = JSON.parse(clientPrefixesJson) as Record<string, string>
-      const expectedPrefix = prefixes[clientSlug]
+  if (clientSlug && clientPasswordSuffix) {
+    const expectedPrefix = CLIENT_PASSWORD_PREFIXES[clientSlug]
 
-      if (expectedPrefix) {
-        const expectedPassword = expectedPrefix + clientPasswordSuffix
-        if (password === expectedPassword) {
-          return { valid: true, role: 'client' }
-        }
+    if (expectedPrefix) {
+      const expectedPassword = expectedPrefix + clientPasswordSuffix
+      if (password === expectedPassword) {
+        return { valid: true, role: 'client' }
       }
-    } catch {
-      console.error('Failed to parse CLIENT_PASSWORD_PREFIXES')
     }
   }
 
