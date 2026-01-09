@@ -22,12 +22,16 @@ const CLIENTS = {
         questions: [
           { id: 'fullName', type: 'text', label: 'Full legal name' },
           { id: 'hasOtherNames', type: 'yesno', label: 'Have you ever used any other names (maiden, nickname, alias)?' },
-          { id: 'otherNames', type: 'text', label: 'List all other names and approximate dates used', showIf: 'hasOtherNames' },
+          { id: 'otherNamesList', type: 'repeatable', label: 'Other names used', showIf: 'hasOtherNames', fields: [
+            { id: 'name', type: 'text', label: 'Name' },
+            { id: 'datesUsed', type: 'text', label: 'Approximate dates used' }
+          ]},
           { id: 'dateOfBirth', type: 'date', label: 'Date of birth' },
           { id: 'placeOfBirth', type: 'text', label: 'Place of birth (city, state, country)' },
           { id: 'currentAddress', type: 'textarea', label: 'Current address (street, city, state, zip)' },
           { id: 'timeAtCurrentAddress', type: 'text', label: 'How long have you lived at your current address?' },
-          { id: 'priorAddresses', type: 'repeatable', label: 'Prior addresses in the past 5 years', fields: [
+          { id: 'hasPriorAddresses', type: 'yesno', label: 'Have you lived at any other addresses in the past 5 years?' },
+          { id: 'priorAddresses', type: 'repeatable', label: 'Prior addresses', showIf: 'hasPriorAddresses', fields: [
             { id: 'address', type: 'textarea', label: 'Address' },
             { id: 'dates', type: 'text', label: 'Dates lived there (from - to)' }
           ]},
@@ -36,7 +40,11 @@ const CLIENTS = {
           { id: 'readsWritesEnglish', type: 'yesno', label: 'Do you read and write English with ease?', defaultValue: true },
           { id: 'readsWritesEnglishLanguage', type: 'text', label: 'What language do you primarily read and write?', showIf: 'readsWritesEnglish', showIfValue: false },
           { id: 'hasFelony', type: 'yesno', label: 'Have you ever been convicted of a felony?' },
-          { id: 'felonyDetails', type: 'textarea', label: 'Please provide details about any felony convictions (offense, date, location)', showIf: 'hasFelony' }
+          { id: 'felonyList', type: 'repeatable', label: 'Felony convictions', showIf: 'hasFelony', fields: [
+            { id: 'offense', type: 'text', label: 'Offense' },
+            { id: 'date', type: 'text', label: 'Date' },
+            { id: 'location', type: 'text', label: 'Location (city, state)' }
+          ]}
         ]
       },
       {
@@ -44,13 +52,17 @@ const CLIENTS = {
         title: 'B. Your Relationship to Dominick',
         questions: [
           { id: 'relationshipType', type: 'text', label: 'What is/was your relationship to Dominick?', placeholder: 'e.g., biological mother, adoptive mother, stepmother' },
-          { id: 'dominickAddresses', type: 'repeatable', label: "Dominick's addresses for the past 10 years", fields: [
+          { id: 'knowsDominickAddresses', type: 'yesno', label: 'Do you know where Dominick lived in the past 10 years?' },
+          { id: 'dominickAddresses', type: 'repeatable', label: "Dominick's addresses", showIf: 'knowsDominickAddresses', fields: [
             { id: 'address', type: 'textarea', label: 'Address' },
             { id: 'dates', type: 'text', label: 'Dates (from - to)' },
             { id: 'whoLivedWith', type: 'text', label: 'Who did Dominick live with at this address?' }
           ]},
           { id: 'livedWithDominick', type: 'yesno', label: 'Did you ever live with Dominick?' },
-          { id: 'livedWithDominickDetails', type: 'textarea', label: 'When and where did you live with Dominick?', showIf: 'livedWithDominick' },
+          { id: 'livedWithDominickPeriods', type: 'repeatable', label: 'Times you lived with Dominick', showIf: 'livedWithDominick', fields: [
+            { id: 'location', type: 'text', label: 'Location/address' },
+            { id: 'dates', type: 'text', label: 'Dates (from - to)' }
+          ]},
           { id: 'communicationFrequency', type: 'text', label: 'How frequently did you communicate with Dominick?', placeholder: 'e.g., daily, weekly, monthly' },
           { id: 'communicationMethods', type: 'multiselect', label: 'How did you communicate with Dominick? (Select all that apply)', options: ['Phone calls', 'Text messages', 'In person', 'Video calls', 'Social media', 'Email'] }
         ]
@@ -60,7 +72,7 @@ const CLIENTS = {
         title: 'C. Financial Support from Dominick',
         questions: [
           { id: 'receivedFinancialSupport', type: 'yesno', label: 'Did Dominick provide you with financial support?' },
-          { id: 'financialSupportDetails', type: 'repeatable', label: 'Details of financial support received', showIf: 'receivedFinancialSupport', fields: [
+          { id: 'financialSupportDetails', type: 'repeatable', label: 'Financial support received', showIf: 'receivedFinancialSupport', fields: [
             { id: 'dates', type: 'text', label: 'Time period (from - to)' },
             { id: 'monthlyAmount', type: 'text', label: 'Approximate monthly amount' },
             { id: 'howProvided', type: 'text', label: 'How was it provided? (cash, check, Venmo, etc.)' }
@@ -72,7 +84,11 @@ const CLIENTS = {
             { id: 'date', type: 'text', label: 'Approximate date' }
           ]},
           { id: 'receivedServices', type: 'yesno', label: 'Did Dominick provide household services for you (repairs, maintenance, etc.)?' },
-          { id: 'servicesDetails', type: 'textarea', label: 'Describe the services Dominick provided', showIf: 'receivedServices' }
+          { id: 'servicesDetails', type: 'repeatable', label: 'Services provided by Dominick', showIf: 'receivedServices', fields: [
+            { id: 'serviceType', type: 'text', label: 'Type of service' },
+            { id: 'description', type: 'text', label: 'Description' },
+            { id: 'frequency', type: 'text', label: 'How often?' }
+          ]}
         ]
       },
       {
@@ -80,13 +96,18 @@ const CLIENTS = {
         title: 'D. Relationship & Shared Experiences',
         questions: [
           { id: 'majorLifeEvents', type: 'yesno', label: "Did Dominick participate in major life events with you (birthdays, holidays, graduations, etc.)?" },
-          { id: 'majorLifeEventsDetails', type: 'textarea', label: 'Describe these events and Dominick\'s participation', showIf: 'majorLifeEvents' },
-          { id: 'socialEvents', type: 'repeatable', label: 'Social events you attended together (2013-2023)', fields: [
+          { id: 'majorLifeEventsList', type: 'repeatable', label: 'Major life events with Dominick', showIf: 'majorLifeEvents', fields: [
+            { id: 'event', type: 'text', label: 'Event type (birthday, holiday, graduation, etc.)' },
+            { id: 'date', type: 'text', label: 'Approximate date' },
+            { id: 'description', type: 'text', label: 'Description of Dominick\'s participation' }
+          ]},
+          { id: 'hadSocialEvents', type: 'yesno', label: 'Did you attend social events together (2013-2023)?' },
+          { id: 'socialEvents', type: 'repeatable', label: 'Social events attended together', showIf: 'hadSocialEvents', fields: [
             { id: 'event', type: 'text', label: 'Event description' },
             { id: 'date', type: 'text', label: 'Approximate date' }
           ]},
           { id: 'hadVacations', type: 'yesno', label: 'Did you take any vacations or trips with Dominick?' },
-          { id: 'vacationDetails', type: 'repeatable', label: 'Vacation/trip details', showIf: 'hadVacations', fields: [
+          { id: 'vacationDetails', type: 'repeatable', label: 'Vacations/trips with Dominick', showIf: 'hadVacations', fields: [
             { id: 'location', type: 'text', label: 'Location' },
             { id: 'dates', type: 'text', label: 'Dates' }
           ]}
@@ -98,13 +119,15 @@ const CLIENTS = {
         questions: [
           { id: 'dominickDOB', type: 'date', label: 'Dominick\'s date of birth' },
           { id: 'dominickPlaceOfBirth', type: 'text', label: 'Dominick\'s place of birth (city, state, country)' },
-          { id: 'dominickEducation', type: 'repeatable', label: 'Dominick\'s education history', fields: [
+          { id: 'knowsDominickEducation', type: 'yesno', label: 'Do you know about Dominick\'s education history?' },
+          { id: 'dominickEducation', type: 'repeatable', label: 'Dominick\'s education', showIf: 'knowsDominickEducation', fields: [
             { id: 'schoolName', type: 'text', label: 'School name' },
             { id: 'location', type: 'text', label: 'Location' },
             { id: 'datesAttended', type: 'text', label: 'Dates attended (from - to)' },
             { id: 'degreeOrGrade', type: 'text', label: 'Degree or highest grade completed' }
           ]},
-          { id: 'dominickEmployment', type: 'repeatable', label: 'Dominick\'s employment history', fields: [
+          { id: 'knowsDominickEmployment', type: 'yesno', label: 'Do you know about Dominick\'s employment history?' },
+          { id: 'dominickEmployment', type: 'repeatable', label: 'Dominick\'s employment', showIf: 'knowsDominickEmployment', fields: [
             { id: 'employer', type: 'text', label: 'Employer name' },
             { id: 'jobTitle', type: 'text', label: 'Job title' },
             { id: 'location', type: 'text', label: 'Location' },
@@ -127,8 +150,12 @@ const CLIENTS = {
             { id: 'email', type: 'text', label: 'Email address' },
             { id: 'treatment', type: 'text', label: 'Type of treatment' }
           ]},
-          { id: 'hadConditionAtIncident', type: 'yesno', label: 'Was Dominick diagnosed with any medical condition at the time of the incident?' },
-          { id: 'conditionDetails', type: 'textarea', label: 'Describe the condition(s)', showIf: 'hadConditionAtIncident' },
+          { id: 'hadConditionAtIncident', type: 'yesno', label: 'Was Dominick diagnosed with any medical conditions?' },
+          { id: 'conditionsList', type: 'repeatable', label: 'Medical conditions', showIf: 'hadConditionAtIncident', fields: [
+            { id: 'condition', type: 'text', label: 'Condition name' },
+            { id: 'datesDiagnosed', type: 'text', label: 'When diagnosed' },
+            { id: 'treatment', type: 'text', label: 'Treatment received' }
+          ]},
           { id: 'hadPrescriptions', type: 'yesno', label: 'Was Dominick taking any prescription medications?' },
           { id: 'prescriptionDetails', type: 'repeatable', label: 'Prescription medications', showIf: 'hadPrescriptions', fields: [
             { id: 'name', type: 'text', label: 'Medication name' },
@@ -136,7 +163,7 @@ const CLIENTS = {
             { id: 'doctor', type: 'text', label: 'Prescribing doctor' }
           ]},
           { id: 'hadMentalHealthTreatment', type: 'yesno', label: 'Was Dominick ever a patient at a mental health facility or received mental health treatment?' },
-          { id: 'mentalHealthHistory', type: 'repeatable', label: 'Mental health treatment history', showIf: 'hadMentalHealthTreatment', fields: [
+          { id: 'mentalHealthHistory', type: 'repeatable', label: 'Mental health treatment', showIf: 'hadMentalHealthTreatment', fields: [
             { id: 'facility', type: 'text', label: 'Facility/provider name' },
             { id: 'location', type: 'text', label: 'Location' },
             { id: 'dates', type: 'text', label: 'Dates (from - to)' },
@@ -163,7 +190,7 @@ const CLIENTS = {
           { id: 'howLifeChanged', type: 'textarea', label: 'How has your daily life changed since Dominick\'s death?' },
           { id: 'emotionalImpact', type: 'textarea', label: 'Describe the emotional and psychological impact of Dominick\'s death on you' },
           { id: 'soughtCounseling', type: 'yesno', label: 'Have you sought grief counseling or therapy since Dominick\'s death?' },
-          { id: 'counselingDetails', type: 'repeatable', label: 'Counseling/therapy details', showIf: 'soughtCounseling', fields: [
+          { id: 'counselingDetails', type: 'repeatable', label: 'Counseling/therapy providers', showIf: 'soughtCounseling', fields: [
             { id: 'provider', type: 'text', label: 'Counselor/therapist name' },
             { id: 'facility', type: 'text', label: 'Facility/practice name' },
             { id: 'phone', type: 'text', label: 'Phone number' },
@@ -177,22 +204,37 @@ const CLIENTS = {
         title: 'H. Prior Claims & Lawsuits',
         questions: [
           { id: 'hasPriorLawsuits', type: 'yesno', label: 'Have you been involved in any lawsuits or claims in the past 10 years?' },
-          { id: 'priorLawsuitsDetails', type: 'textarea', label: 'Provide details (case name, court, outcome)', showIf: 'hasPriorLawsuits' },
+          { id: 'priorLawsuitsList', type: 'repeatable', label: 'Prior lawsuits/claims', showIf: 'hasPriorLawsuits', fields: [
+            { id: 'caseName', type: 'text', label: 'Case name' },
+            { id: 'court', type: 'text', label: 'Court' },
+            { id: 'date', type: 'text', label: 'Date' },
+            { id: 'outcome', type: 'text', label: 'Outcome' }
+          ]},
           { id: 'hasWorkersComp', type: 'yesno', label: 'Have you ever filed a workers\' compensation claim?' },
-          { id: 'workersCompDetails', type: 'textarea', label: 'Provide details (employer, date, injury, outcome)', showIf: 'hasWorkersComp' }
+          { id: 'workersCompList', type: 'repeatable', label: 'Workers\' compensation claims', showIf: 'hasWorkersComp', fields: [
+            { id: 'employer', type: 'text', label: 'Employer' },
+            { id: 'date', type: 'text', label: 'Date' },
+            { id: 'injury', type: 'text', label: 'Injury' },
+            { id: 'outcome', type: 'text', label: 'Outcome' }
+          ]}
         ]
       },
       {
         id: 'funeral-expenses',
         title: 'I. Funeral & Burial Expenses',
         questions: [
-          { id: 'funeralExpenses', type: 'repeatable', label: 'Funeral and burial expenses', fields: [
+          { id: 'hasFuneralExpenses', type: 'yesno', label: 'Were there funeral and burial expenses?' },
+          { id: 'funeralExpenses', type: 'repeatable', label: 'Funeral and burial expenses', showIf: 'hasFuneralExpenses', fields: [
             { id: 'expenseType', type: 'text', label: 'Type of expense' },
             { id: 'amount', type: 'text', label: 'Amount' },
             { id: 'paidBy', type: 'text', label: 'Paid by whom?' }
           ]},
           { id: 'hasOtherDeathExpenses', type: 'yesno', label: 'Are there any other expenses related to Dominick\'s death?' },
-          { id: 'otherDeathExpenses', type: 'textarea', label: 'Describe other death-related expenses', showIf: 'hasOtherDeathExpenses' }
+          { id: 'otherDeathExpensesList', type: 'repeatable', label: 'Other death-related expenses', showIf: 'hasOtherDeathExpenses', fields: [
+            { id: 'expenseType', type: 'text', label: 'Type of expense' },
+            { id: 'amount', type: 'text', label: 'Amount' },
+            { id: 'description', type: 'text', label: 'Description' }
+          ]}
         ]
       },
       {
@@ -200,9 +242,19 @@ const CLIENTS = {
         title: 'J. Insurance',
         questions: [
           { id: 'hadInsuranceCoverage', type: 'yesno', label: 'At the time of the incident, did you have any insurance that might cover damages from this incident?' },
-          { id: 'insuranceCoverageDetails', type: 'textarea', label: 'Provide details: type of coverage, insurance company name, policy number, and coverage limits', showIf: 'hadInsuranceCoverage' },
+          { id: 'insuranceCoverageList', type: 'repeatable', label: 'Insurance coverage', showIf: 'hadInsuranceCoverage', fields: [
+            { id: 'coverageType', type: 'text', label: 'Type of coverage' },
+            { id: 'company', type: 'text', label: 'Insurance company' },
+            { id: 'policyNumber', type: 'text', label: 'Policy number' },
+            { id: 'coverageLimits', type: 'text', label: 'Coverage limits' }
+          ]},
           { id: 'wasLifeInsuranceBeneficiary', type: 'yesno', label: "Was Dominick's life insured with you as a beneficiary?" },
-          { id: 'lifeInsuranceDetails', type: 'textarea', label: 'Provide details: insurance company name, policy number, coverage amount, and whether you have received payment', showIf: 'wasLifeInsuranceBeneficiary' }
+          { id: 'lifeInsuranceList', type: 'repeatable', label: 'Life insurance policies', showIf: 'wasLifeInsuranceBeneficiary', fields: [
+            { id: 'company', type: 'text', label: 'Insurance company' },
+            { id: 'policyNumber', type: 'text', label: 'Policy number' },
+            { id: 'coverageAmount', type: 'text', label: 'Coverage amount' },
+            { id: 'receivedPayment', type: 'text', label: 'Have you received payment? (Yes/No/Pending)' }
+          ]}
         ]
       },
       {
