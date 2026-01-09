@@ -35,6 +35,11 @@
   status = 200
 
 [[redirects]]
+  from = "/api/resolve-comment"
+  to = "/.netlify/functions/resolve-comment"
+  status = 200
+
+[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200

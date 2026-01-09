@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import { HashRouter, Routes, Route, useParams, useNavigate, Link } from 'react-router-dom'
-import { ChevronDown, ChevronRight, Plus, Trash2, Lock, Eye, Clock, CheckCircle, Loader2, AlertCircle, Download, Copy, Upload, ExternalLink, MessageCircle, Send, X } from 'lucide-react'
+import { ChevronDown, ChevronRight, Plus, Trash2, Lock, Eye, Clock, CheckCircle, Loader2, AlertCircle, Download, Copy, Upload, ExternalLink, MessageCircle, X } from 'lucide-react'
 
 // ============================================================================
 // CLIENT CONFIGURATIONS
@@ -340,6 +340,44 @@ function getDaysUntilDeadline(deadline) {
   return diffDays
 }
 
+function calculateProgress(sections, responses) {
+  if (!sections || !responses) return 0
+
+  let totalQuestions = 0
+  let answeredQuestions = 0
+
+  const isAnswered = (question, value) => {
+    if (value === undefined || value === null || value === '') return false
+    if (question.type === 'yesno') return value === true || value === false
+    if (question.type === 'multiselect') return Array.isArray(value) && value.length > 0
+    if (question.type === 'checklist') return typeof value === 'object' && Object.values(value).some(v => v === true)
+    if (question.type === 'repeatable') return Array.isArray(value) && value.length > 0
+    return true
+  }
+
+  for (const section of sections) {
+    for (const question of section.questions) {
+      // Check if this question should be shown (handle showIf conditions)
+      if (question.showIf) {
+        const parentValue = responses[question.showIf]
+        const expectedValue = question.showIfValue !== undefined ? question.showIfValue : true
+        if (parentValue !== expectedValue) {
+          // This question is hidden, don't count it
+          continue
+        }
+      }
+
+      totalQuestions++
+      if (isAnswered(question, responses[question.id])) {
+        answeredQuestions++
+      }
+    }
+  }
+
+  if (totalQuestions === 0) return 0
+  return Math.round((answeredQuestions / totalQuestions) * 100)
+}
+
 // ============================================================================
 // FORM COMPONENTS
 // ============================================================================
@@ -501,29 +539,38 @@ function RepeatableField({ fields, value = [], onChange, disabled }) {
   )
 }
 
-function FieldChat({ questionId, messages = [], onSendMessage, role, disabled }) {
+function FieldComment({ questionId, comments = [], onAddComment, onResolveComment, role }) {
   const [isOpen, setIsOpen] = useState(false)
-  const [newMessage, setNewMessage] = useState('')
-  const [isSending, setIsSending] = useState(false)
+  const [newComment, setNewComment] = useState('')
+  const [isSaving, setIsSaving] = useState(false)
 
-  const hasMessages = messages.length > 0
-  const hasUnreadFromOther = messages.length > 0 && messages[messages.length - 1].role !== role
+  const hasComments = comments.length > 0
 
-  const handleSend = async () => {
-    if (!newMessage.trim() || isSending) return
-    setIsSending(true)
+  const handleAdd = async () => {
+    if (!newComment.trim() || isSaving) return
+    setIsSaving(true)
     try {
-      await onSendMessage(questionId, newMessage.trim())
-      setNewMessage('')
+      await onAddComment(questionId, newComment.trim())
+      setNewComment('')
     } finally {
-      setIsSending(false)
+      setIsSaving(false)
+    }
+  }
+
+  const handleResolve = async (commentIndex) => {
+    if (isSaving) return
+    setIsSaving(true)
+    try {
+      await onResolveComment(questionId, commentIndex)
+    } finally {
+      setIsSaving(false)
     }
   }
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
-      handleSend()
+      handleAdd()
     }
   }
 
@@ -533,26 +580,24 @@ function FieldChat({ questionId, messages = [], onSendMessage, role, disabled })
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         className={`p-1.5 rounded-full transition-colors ${
-          hasUnreadFromOther
-            ? 'bg-blue-100 text-blue-600 hover:bg-blue-200'
-            : hasMessages
-            ? 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+          hasComments
+            ? 'bg-yellow-100 text-yellow-600 hover:bg-yellow-200'
             : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
         }`}
-        title={hasMessages ? `${messages.length} message(s)` : 'Ask a question'}
+        title={hasComments ? `${comments.length} comment(s)` : 'Add a comment or question'}
       >
         <MessageCircle size={18} />
-        {hasUnreadFromOther && (
-          <span className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full border-2 border-white" />
+        {hasComments && (
+          <span className="absolute -top-1 -right-1 w-4 h-4 bg-yellow-500 rounded-full border-2 border-white text-[10px] text-white flex items-center justify-center font-medium">
+            {comments.length}
+          </span>
         )}
       </button>
 
       {isOpen && (
         <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-20">
           <div className="flex items-center justify-between px-3 py-2 border-b border-gray-100">
-            <span className="text-sm font-medium text-gray-700">
-              {role === 'client' ? 'Questions for Attorney' : 'Client Questions'}
-            </span>
+            <span className="text-sm font-medium text-gray-700">Comments & Questions</span>
             <button
               type="button"
               onClick={() => setIsOpen(false)}
@@ -563,65 +608,70 @@ function FieldChat({ questionId, messages = [], onSendMessage, role, disabled })
           </div>
 
           <div className="max-h-64 overflow-y-auto p-3 space-y-2">
-            {messages.length === 0 ? (
+            {comments.length === 0 ? (
               <p className="text-sm text-gray-500 text-center py-4">
-                {role === 'client'
-                  ? 'Have a question about this field? Ask your attorney here.'
-                  : 'No questions from client yet.'}
+                No comments yet. Add a question or note for clarification.
               </p>
             ) : (
-              messages.map((msg, idx) => (
+              comments.map((comment, idx) => (
                 <div
                   key={idx}
-                  className={`p-2 rounded-lg text-sm ${
-                    msg.role === role
-                      ? 'bg-blue-100 text-blue-900 ml-4'
-                      : 'bg-gray-100 text-gray-800 mr-4'
-                  }`}
+                  className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-sm"
                 >
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-medium text-xs">
-                      {msg.role === 'client' ? 'Client' : 'Attorney'}
-                    </span>
-                    <span className="text-xs opacity-60">
-                      {new Date(msg.timestamp).toLocaleDateString()}
-                    </span>
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-medium text-xs text-yellow-800">
+                          {comment.role === 'client' ? 'Client' : 'Attorney'}
+                        </span>
+                        <span className="text-xs text-yellow-600">
+                          {new Date(comment.timestamp).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <p className="whitespace-pre-wrap text-gray-800">{comment.text}</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleResolve(idx)}
+                      disabled={isSaving}
+                      className="p-1 text-green-600 hover:text-green-700 hover:bg-green-50 rounded"
+                      title="Mark as resolved (delete)"
+                    >
+                      <CheckCircle size={16} />
+                    </button>
                   </div>
-                  <p className="whitespace-pre-wrap">{msg.text}</p>
                 </div>
               ))
             )}
           </div>
 
-          {!disabled && (
-            <div className="p-2 border-t border-gray-100">
-              <div className="flex gap-2">
-                <textarea
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  placeholder={role === 'client' ? 'Type your question...' : 'Type your response...'}
-                  className="flex-1 text-sm px-3 py-2 border border-gray-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  rows={2}
-                />
-                <button
-                  type="button"
-                  onClick={handleSend}
-                  disabled={!newMessage.trim() || isSending}
-                  className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isSending ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
-                </button>
-              </div>
+          <div className="p-2 border-t border-gray-100">
+            <div className="flex gap-2">
+              <textarea
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Add a comment or question..."
+                className="flex-1 text-sm px-3 py-2 border border-gray-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                rows={2}
+              />
+              <button
+                type="button"
+                onClick={handleAdd}
+                disabled={!newComment.trim() || isSaving}
+                className="px-3 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />}
+              </button>
             </div>
-          )}
+          </div>
         </div>
       )}
     </div>
   )
 }
 
-function Question({ question, value, onChange, responses, disabled, messages, onSendMessage, role }) {
+function Question({ question, value, onChange, responses, disabled, comments, onAddComment, onResolveComment, role }) {
   // Check showIf condition
   if (question.showIf) {
     const parentValue = responses[question.showIf]
@@ -682,13 +732,13 @@ function Question({ question, value, onChange, responses, disabled, messages, on
     <div className="py-4 border-b border-gray-100 last:border-b-0">
       <div className="flex items-start justify-between gap-2 mb-2">
         <label className="block text-gray-800 font-medium">{question.label}</label>
-        {onSendMessage && (
-          <FieldChat
+        {onAddComment && (
+          <FieldComment
             questionId={question.id}
-            messages={messages}
-            onSendMessage={onSendMessage}
+            comments={comments}
+            onAddComment={onAddComment}
+            onResolveComment={onResolveComment}
             role={role}
-            disabled={false}
           />
         )}
       </div>
@@ -697,7 +747,7 @@ function Question({ question, value, onChange, responses, disabled, messages, on
   )
 }
 
-function Section({ section, responses, onChange, disabled, defaultExpanded = false, dropboxLink, messages = {}, onSendMessage, role }) {
+function Section({ section, responses, onChange, disabled, defaultExpanded = false, dropboxLink, comments = {}, onAddComment, onResolveComment, role }) {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded)
 
   return (
@@ -740,8 +790,9 @@ function Section({ section, responses, onChange, disabled, defaultExpanded = fal
               onChange={(newValue) => onChange(question.id, newValue)}
               responses={responses}
               disabled={disabled}
-              messages={messages[question.id] || []}
-              onSendMessage={onSendMessage}
+              comments={comments[question.id] || []}
+              onAddComment={onAddComment}
+              onResolveComment={onResolveComment}
               role={role}
             />
           ))}
@@ -826,18 +877,18 @@ function ClientForm() {
   const { clientSlug } = useParams()
   const client = CLIENTS[clientSlug]
   const [responses, setResponses] = useState({})
-  const [messages, setMessages] = useState({})
+  const [comments, setComments] = useState({})
   const [saveStatus, setSaveStatus] = useState('idle') // idle, saving, saved, error
   const [lastSaved, setLastSaved] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  // Load existing responses and messages
+  // Load existing responses and comments
   useEffect(() => {
     if (!client) return
 
     const loadData = async () => {
       try {
-        const [responsesRes, messagesRes] = await Promise.all([
+        const [responsesRes, commentsRes] = await Promise.all([
           fetch(`/api/get-responses?clientSlug=${clientSlug}`),
           fetch(`/api/get-messages?clientSlug=${clientSlug}`)
         ])
@@ -850,10 +901,10 @@ function ClientForm() {
           }
         }
 
-        if (messagesRes.ok) {
-          const data = await messagesRes.json()
+        if (commentsRes.ok) {
+          const data = await commentsRes.json()
           if (data.messages) {
-            setMessages(data.messages)
+            setComments(data.messages)
           }
         }
       } catch (err) {
@@ -898,8 +949,8 @@ function ClientForm() {
     saveResponses(newResponses)
   }, [responses, saveResponses])
 
-  // Send a message on a field
-  const handleSendMessage = useCallback(async (questionId, text) => {
+  // Add a comment on a field
+  const handleAddComment = useCallback(async (questionId, text) => {
     try {
       const res = await fetch('/api/save-message', {
         method: 'POST',
@@ -913,14 +964,36 @@ function ClientForm() {
       })
       if (res.ok) {
         const data = await res.json()
-        // Optimistically update local state
-        setMessages(prev => ({
+        setComments(prev => ({
           ...prev,
           [questionId]: [...(prev[questionId] || []), data.message]
         }))
       }
     } catch (err) {
-      console.error('Failed to send message:', err)
+      console.error('Failed to add comment:', err)
+    }
+  }, [clientSlug])
+
+  // Resolve (delete) a comment
+  const handleResolveComment = useCallback(async (questionId, commentIndex) => {
+    try {
+      const res = await fetch('/api/resolve-comment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          clientSlug,
+          questionId,
+          commentIndex
+        })
+      })
+      if (res.ok) {
+        setComments(prev => ({
+          ...prev,
+          [questionId]: prev[questionId].filter((_, i) => i !== commentIndex)
+        }))
+      }
+    } catch (err) {
+      console.error('Failed to resolve comment:', err)
     }
   }, [clientSlug])
 
@@ -996,7 +1069,7 @@ function ClientForm() {
               <li>You can close this form and return later to continue.</li>
               <li>Please answer all questions to the best of your ability.</li>
               <li>If you don't know an answer, you may leave it blank or write "unknown."</li>
-              <li>Have a question? Click the <MessageCircle size={14} className="inline text-gray-500" /> icon next to any field to message your attorney.</li>
+              <li>Have a question? Click the <MessageCircle size={14} className="inline text-yellow-600" /> icon next to any field to add a comment. Your attorney will see it and can call to clarify.</li>
             </ul>
           </div>
 
@@ -1024,8 +1097,9 @@ function ClientForm() {
                     disabled={false}
                     defaultExpanded={index === 0}
                     dropboxLink={client.dropboxLink}
-                    messages={messages}
-                    onSendMessage={handleSendMessage}
+                    comments={comments}
+                    onAddComment={handleAddComment}
+                    onResolveComment={handleResolveComment}
                     role="client"
                   />
                 ))}
@@ -1057,18 +1131,35 @@ function ClientForm() {
 // ============================================================================
 
 function ReviewDashboard() {
-  const [clients, setClients] = useState([])
+  const [clientsData, setClientsData] = useState({})
   const [isLoading, setIsLoading] = useState(true)
   const navigate = useNavigate()
 
   useEffect(() => {
-    const loadClients = async () => {
+    const loadClientsData = async () => {
       try {
-        const res = await fetch('/api/list-clients')
-        if (res.ok) {
-          const data = await res.json()
-          setClients(data.clients || [])
-        }
+        // Fetch responses for each configured client
+        const clientSlugs = Object.keys(CLIENTS)
+        const responses = await Promise.all(
+          clientSlugs.map(async (slug) => {
+            try {
+              const res = await fetch(`/api/get-responses?clientSlug=${slug}`)
+              if (res.ok) {
+                const data = await res.json()
+                return { slug, responses: data.responses || {}, updatedAt: data.updatedAt }
+              }
+            } catch (err) {
+              console.error(`Failed to load responses for ${slug}:`, err)
+            }
+            return { slug, responses: {}, updatedAt: null }
+          })
+        )
+
+        const dataMap = {}
+        responses.forEach(({ slug, responses, updatedAt }) => {
+          dataMap[slug] = { responses, updatedAt }
+        })
+        setClientsData(dataMap)
       } catch (err) {
         console.error('Failed to load clients:', err)
       } finally {
@@ -1076,21 +1167,24 @@ function ReviewDashboard() {
       }
     }
 
-    loadClients()
+    loadClientsData()
   }, [])
 
-  // Merge config clients with response data
+  // Build client list with progress
   const allClients = useMemo(() => {
     const merged = []
     for (const [slug, config] of Object.entries(CLIENTS)) {
-      const responseData = clients.find(c => c.slug === slug)
+      const data = clientsData[slug] || {}
+      const progress = calculateProgress(config.sections, data.responses || {})
+      const hasResponses = Object.keys(data.responses || {}).length > 0
       merged.push({
         slug,
         clientName: config.clientName,
         caseName: config.caseName,
         deadline: config.deadline,
-        updatedAt: responseData?.updatedAt || null,
-        hasResponses: !!responseData
+        updatedAt: data.updatedAt || null,
+        hasResponses,
+        progress
       })
     }
     return merged.sort((a, b) => {
@@ -1099,7 +1193,7 @@ function ReviewDashboard() {
       if (b.updatedAt) return 1
       return 0
     })
-  }, [clients])
+  }, [clientsData])
 
   return (
     <PasswordGate
@@ -1138,18 +1232,40 @@ function ReviewDashboard() {
                     <div className="text-right">
                       {client.hasResponses ? (
                         <>
-                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
-                            <CheckCircle size={12} /> Submitted
-                          </span>
-                          <p className="text-xs text-gray-500 mt-1">
+                          <p className="text-xs text-gray-500">
                             Updated: {formatDate(client.updatedAt)}
                           </p>
                         </>
                       ) : (
                         <span className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-medium">
-                          <Clock size={12} /> Pending
+                          <Clock size={12} /> Not Started
                         </span>
                       )}
+                    </div>
+                  </div>
+                  {/* Progress bar */}
+                  <div className="mt-3">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-sm font-medium text-gray-700">Progress</span>
+                      <span className={`text-sm font-semibold ${
+                        client.progress === 100 ? 'text-green-600' :
+                        client.progress >= 50 ? 'text-blue-600' :
+                        client.progress > 0 ? 'text-yellow-600' :
+                        'text-gray-400'
+                      }`}>
+                        {client.progress}%
+                      </span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2.5">
+                      <div
+                        className={`h-2.5 rounded-full transition-all ${
+                          client.progress === 100 ? 'bg-green-500' :
+                          client.progress >= 50 ? 'bg-blue-500' :
+                          client.progress > 0 ? 'bg-yellow-500' :
+                          'bg-gray-300'
+                        }`}
+                        style={{ width: `${client.progress}%` }}
+                      />
                     </div>
                   </div>
                   <div className="mt-3 flex items-center text-blue-600 text-sm font-medium">
@@ -1243,7 +1359,7 @@ function ReviewClientDetail() {
   const { clientSlug } = useParams()
   const client = CLIENTS[clientSlug]
   const [responses, setResponses] = useState({})
-  const [messages, setMessages] = useState({})
+  const [comments, setComments] = useState({})
   const [isLoading, setIsLoading] = useState(true)
   const [lastSaved, setLastSaved] = useState(null)
   const [copyStatus, setCopyStatus] = useState('')
@@ -1254,7 +1370,7 @@ function ReviewClientDetail() {
 
     const loadData = async () => {
       try {
-        const [responsesRes, messagesRes] = await Promise.all([
+        const [responsesRes, commentsRes] = await Promise.all([
           fetch(`/api/get-responses?clientSlug=${clientSlug}`),
           fetch(`/api/get-messages?clientSlug=${clientSlug}`)
         ])
@@ -1267,10 +1383,10 @@ function ReviewClientDetail() {
           }
         }
 
-        if (messagesRes.ok) {
-          const data = await messagesRes.json()
+        if (commentsRes.ok) {
+          const data = await commentsRes.json()
           if (data.messages) {
-            setMessages(data.messages)
+            setComments(data.messages)
           }
         }
       } catch (err) {
@@ -1283,8 +1399,8 @@ function ReviewClientDetail() {
     loadData()
   }, [clientSlug, client])
 
-  // Send a message on a field (attorney reply)
-  const handleSendMessage = useCallback(async (questionId, text) => {
+  // Add a comment on a field (attorney)
+  const handleAddComment = useCallback(async (questionId, text) => {
     try {
       const res = await fetch('/api/save-message', {
         method: 'POST',
@@ -1298,14 +1414,36 @@ function ReviewClientDetail() {
       })
       if (res.ok) {
         const data = await res.json()
-        // Optimistically update local state
-        setMessages(prev => ({
+        setComments(prev => ({
           ...prev,
           [questionId]: [...(prev[questionId] || []), data.message]
         }))
       }
     } catch (err) {
-      console.error('Failed to send message:', err)
+      console.error('Failed to add comment:', err)
+    }
+  }, [clientSlug])
+
+  // Resolve (delete) a comment
+  const handleResolveComment = useCallback(async (questionId, commentIndex) => {
+    try {
+      const res = await fetch('/api/resolve-comment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          clientSlug,
+          questionId,
+          commentIndex
+        })
+      })
+      if (res.ok) {
+        setComments(prev => ({
+          ...prev,
+          [questionId]: prev[questionId].filter((_, i) => i !== commentIndex)
+        }))
+      }
+    } catch (err) {
+      console.error('Failed to resolve comment:', err)
     }
   }, [clientSlug])
 
@@ -1398,34 +1536,28 @@ function ReviewClientDetail() {
             </div>
           </div>
 
-          {/* Client Questions Summary */}
-          {Object.keys(messages).length > 0 && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+          {/* Comments Summary */}
+          {Object.keys(comments).length > 0 && (
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
               <div className="flex items-start gap-3">
-                <MessageCircle className="text-blue-500 mt-0.5" size={20} />
+                <MessageCircle className="text-yellow-600 mt-0.5" size={20} />
                 <div className="flex-1">
-                  <h3 className="font-semibold text-blue-800">Client Questions</h3>
-                  <p className="text-sm text-blue-700 mb-2">
-                    The client has questions on {Object.keys(messages).length} field(s). Look for the <MessageCircle size={14} className="inline" /> icons to respond.
+                  <h3 className="font-semibold text-yellow-800">Comments & Questions</h3>
+                  <p className="text-sm text-yellow-700 mb-2">
+                    There are comments on {Object.keys(comments).length} field(s). Look for the <MessageCircle size={14} className="inline" /> icons to view or resolve them.
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    {Object.entries(messages).map(([questionId, msgs]) => {
-                      const lastMsg = msgs[msgs.length - 1]
-                      const needsReply = lastMsg?.role === 'client'
-                      return (
-                        <span
-                          key={questionId}
-                          className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
-                            needsReply
-                              ? 'bg-blue-200 text-blue-800'
-                              : 'bg-gray-200 text-gray-700'
-                          }`}
-                        >
-                          {questionId}
-                          {needsReply && <span className="w-2 h-2 bg-blue-500 rounded-full" />}
+                    {Object.entries(comments).map(([questionId, cmts]) => (
+                      <span
+                        key={questionId}
+                        className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-yellow-200 text-yellow-800"
+                      >
+                        {questionId}
+                        <span className="w-4 h-4 bg-yellow-500 rounded-full text-white text-[10px] flex items-center justify-center">
+                          {cmts.length}
                         </span>
-                      )
-                    })}
+                      </span>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -1491,8 +1623,9 @@ function ReviewClientDetail() {
                   disabled={true}
                   defaultExpanded={index === 0}
                   dropboxLink={client.dropboxLink}
-                  messages={messages}
-                  onSendMessage={handleSendMessage}
+                  comments={comments}
+                  onAddComment={handleAddComment}
+                  onResolveComment={handleResolveComment}
                   role="attorney"
                 />
               ))}
