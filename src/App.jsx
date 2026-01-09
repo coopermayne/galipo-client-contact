@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import { HashRouter, Routes, Route, useParams, useNavigate, Link } from 'react-router-dom'
-import { ChevronDown, ChevronRight, Plus, Trash2, Lock, Eye, Clock, CheckCircle, Loader2, AlertCircle, Download, Copy, Upload, ExternalLink } from 'lucide-react'
+import { ChevronDown, ChevronRight, Plus, Trash2, Lock, Eye, Clock, CheckCircle, Loader2, AlertCircle, Download, Copy, Upload, ExternalLink, MessageCircle, Send, X } from 'lucide-react'
 
 // ============================================================================
 // CLIENT CONFIGURATIONS
@@ -501,7 +501,127 @@ function RepeatableField({ fields, value = [], onChange, disabled }) {
   )
 }
 
-function Question({ question, value, onChange, responses, disabled }) {
+function FieldChat({ questionId, messages = [], onSendMessage, role, disabled }) {
+  const [isOpen, setIsOpen] = useState(false)
+  const [newMessage, setNewMessage] = useState('')
+  const [isSending, setIsSending] = useState(false)
+
+  const hasMessages = messages.length > 0
+  const hasUnreadFromOther = messages.length > 0 && messages[messages.length - 1].role !== role
+
+  const handleSend = async () => {
+    if (!newMessage.trim() || isSending) return
+    setIsSending(true)
+    try {
+      await onSendMessage(questionId, newMessage.trim())
+      setNewMessage('')
+    } finally {
+      setIsSending(false)
+    }
+  }
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      handleSend()
+    }
+  }
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className={`p-1.5 rounded-full transition-colors ${
+          hasUnreadFromOther
+            ? 'bg-blue-100 text-blue-600 hover:bg-blue-200'
+            : hasMessages
+            ? 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+            : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
+        }`}
+        title={hasMessages ? `${messages.length} message(s)` : 'Ask a question'}
+      >
+        <MessageCircle size={18} />
+        {hasUnreadFromOther && (
+          <span className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full border-2 border-white" />
+        )}
+      </button>
+
+      {isOpen && (
+        <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-20">
+          <div className="flex items-center justify-between px-3 py-2 border-b border-gray-100">
+            <span className="text-sm font-medium text-gray-700">
+              {role === 'client' ? 'Questions for Attorney' : 'Client Questions'}
+            </span>
+            <button
+              type="button"
+              onClick={() => setIsOpen(false)}
+              className="p-1 text-gray-400 hover:text-gray-600"
+            >
+              <X size={16} />
+            </button>
+          </div>
+
+          <div className="max-h-64 overflow-y-auto p-3 space-y-2">
+            {messages.length === 0 ? (
+              <p className="text-sm text-gray-500 text-center py-4">
+                {role === 'client'
+                  ? 'Have a question about this field? Ask your attorney here.'
+                  : 'No questions from client yet.'}
+              </p>
+            ) : (
+              messages.map((msg, idx) => (
+                <div
+                  key={idx}
+                  className={`p-2 rounded-lg text-sm ${
+                    msg.role === role
+                      ? 'bg-blue-100 text-blue-900 ml-4'
+                      : 'bg-gray-100 text-gray-800 mr-4'
+                  }`}
+                >
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="font-medium text-xs">
+                      {msg.role === 'client' ? 'Client' : 'Attorney'}
+                    </span>
+                    <span className="text-xs opacity-60">
+                      {new Date(msg.timestamp).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <p className="whitespace-pre-wrap">{msg.text}</p>
+                </div>
+              ))
+            )}
+          </div>
+
+          {!disabled && (
+            <div className="p-2 border-t border-gray-100">
+              <div className="flex gap-2">
+                <textarea
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder={role === 'client' ? 'Type your question...' : 'Type your response...'}
+                  className="flex-1 text-sm px-3 py-2 border border-gray-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  rows={2}
+                />
+                <button
+                  type="button"
+                  onClick={handleSend}
+                  disabled={!newMessage.trim() || isSending}
+                  className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isSending ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function Question({ question, value, onChange, responses, disabled, messages, onSendMessage, role }) {
   // Check showIf condition
   if (question.showIf) {
     const parentValue = responses[question.showIf]
@@ -560,13 +680,24 @@ function Question({ question, value, onChange, responses, disabled }) {
 
   return (
     <div className="py-4 border-b border-gray-100 last:border-b-0">
-      <label className="block text-gray-800 font-medium mb-2">{question.label}</label>
+      <div className="flex items-start justify-between gap-2 mb-2">
+        <label className="block text-gray-800 font-medium">{question.label}</label>
+        {onSendMessage && (
+          <FieldChat
+            questionId={question.id}
+            messages={messages}
+            onSendMessage={onSendMessage}
+            role={role}
+            disabled={false}
+          />
+        )}
+      </div>
       {renderInput()}
     </div>
   )
 }
 
-function Section({ section, responses, onChange, disabled, defaultExpanded = false, dropboxLink }) {
+function Section({ section, responses, onChange, disabled, defaultExpanded = false, dropboxLink, messages = {}, onSendMessage, role }) {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded)
 
   return (
@@ -609,6 +740,9 @@ function Section({ section, responses, onChange, disabled, defaultExpanded = fal
               onChange={(newValue) => onChange(question.id, newValue)}
               responses={responses}
               disabled={disabled}
+              messages={messages[question.id] || []}
+              onSendMessage={onSendMessage}
+              role={role}
             />
           ))}
         </div>
@@ -692,32 +826,44 @@ function ClientForm() {
   const { clientSlug } = useParams()
   const client = CLIENTS[clientSlug]
   const [responses, setResponses] = useState({})
+  const [messages, setMessages] = useState({})
   const [saveStatus, setSaveStatus] = useState('idle') // idle, saving, saved, error
   const [lastSaved, setLastSaved] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  // Load existing responses
+  // Load existing responses and messages
   useEffect(() => {
     if (!client) return
 
-    const loadResponses = async () => {
+    const loadData = async () => {
       try {
-        const res = await fetch(`/api/get-responses?clientSlug=${clientSlug}`)
-        if (res.ok) {
-          const data = await res.json()
+        const [responsesRes, messagesRes] = await Promise.all([
+          fetch(`/api/get-responses?clientSlug=${clientSlug}`),
+          fetch(`/api/get-messages?clientSlug=${clientSlug}`)
+        ])
+
+        if (responsesRes.ok) {
+          const data = await responsesRes.json()
           if (data.responses) {
             setResponses(data.responses)
             setLastSaved(data.updatedAt)
           }
         }
+
+        if (messagesRes.ok) {
+          const data = await messagesRes.json()
+          if (data.messages) {
+            setMessages(data.messages)
+          }
+        }
       } catch (err) {
-        console.error('Failed to load responses:', err)
+        console.error('Failed to load data:', err)
       } finally {
         setIsLoading(false)
       }
     }
 
-    loadResponses()
+    loadData()
   }, [clientSlug, client])
 
   // Auto-save function
@@ -751,6 +897,32 @@ function ClientForm() {
     setResponses(newResponses)
     saveResponses(newResponses)
   }, [responses, saveResponses])
+
+  // Send a message on a field
+  const handleSendMessage = useCallback(async (questionId, text) => {
+    try {
+      const res = await fetch('/api/save-message', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          clientSlug,
+          questionId,
+          role: 'client',
+          text
+        })
+      })
+      if (res.ok) {
+        const data = await res.json()
+        // Optimistically update local state
+        setMessages(prev => ({
+          ...prev,
+          [questionId]: [...(prev[questionId] || []), data.message]
+        }))
+      }
+    } catch (err) {
+      console.error('Failed to send message:', err)
+    }
+  }, [clientSlug])
 
   if (!client) {
     return (
@@ -824,6 +996,7 @@ function ClientForm() {
               <li>You can close this form and return later to continue.</li>
               <li>Please answer all questions to the best of your ability.</li>
               <li>If you don't know an answer, you may leave it blank or write "unknown."</li>
+              <li>Have a question? Click the <MessageCircle size={14} className="inline text-gray-500" /> icon next to any field to message your attorney.</li>
             </ul>
           </div>
 
@@ -851,6 +1024,9 @@ function ClientForm() {
                     disabled={false}
                     defaultExpanded={index === 0}
                     dropboxLink={client.dropboxLink}
+                    messages={messages}
+                    onSendMessage={handleSendMessage}
+                    role="client"
                   />
                 ))}
               </div>
@@ -1067,6 +1243,7 @@ function ReviewClientDetail() {
   const { clientSlug } = useParams()
   const client = CLIENTS[clientSlug]
   const [responses, setResponses] = useState({})
+  const [messages, setMessages] = useState({})
   const [isLoading, setIsLoading] = useState(true)
   const [lastSaved, setLastSaved] = useState(null)
   const [copyStatus, setCopyStatus] = useState('')
@@ -1075,25 +1252,62 @@ function ReviewClientDetail() {
   useEffect(() => {
     if (!client) return
 
-    const loadResponses = async () => {
+    const loadData = async () => {
       try {
-        const res = await fetch(`/api/get-responses?clientSlug=${clientSlug}`)
-        if (res.ok) {
-          const data = await res.json()
+        const [responsesRes, messagesRes] = await Promise.all([
+          fetch(`/api/get-responses?clientSlug=${clientSlug}`),
+          fetch(`/api/get-messages?clientSlug=${clientSlug}`)
+        ])
+
+        if (responsesRes.ok) {
+          const data = await responsesRes.json()
           if (data.responses) {
             setResponses(data.responses)
             setLastSaved(data.updatedAt)
           }
         }
+
+        if (messagesRes.ok) {
+          const data = await messagesRes.json()
+          if (data.messages) {
+            setMessages(data.messages)
+          }
+        }
       } catch (err) {
-        console.error('Failed to load responses:', err)
+        console.error('Failed to load data:', err)
       } finally {
         setIsLoading(false)
       }
     }
 
-    loadResponses()
+    loadData()
   }, [clientSlug, client])
+
+  // Send a message on a field (attorney reply)
+  const handleSendMessage = useCallback(async (questionId, text) => {
+    try {
+      const res = await fetch('/api/save-message', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          clientSlug,
+          questionId,
+          role: 'attorney',
+          text
+        })
+      })
+      if (res.ok) {
+        const data = await res.json()
+        // Optimistically update local state
+        setMessages(prev => ({
+          ...prev,
+          [questionId]: [...(prev[questionId] || []), data.message]
+        }))
+      }
+    } catch (err) {
+      console.error('Failed to send message:', err)
+    }
+  }, [clientSlug])
 
   const handleDownloadJSON = () => {
     const exportData = {
@@ -1184,6 +1398,40 @@ function ReviewClientDetail() {
             </div>
           </div>
 
+          {/* Client Questions Summary */}
+          {Object.keys(messages).length > 0 && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+              <div className="flex items-start gap-3">
+                <MessageCircle className="text-blue-500 mt-0.5" size={20} />
+                <div className="flex-1">
+                  <h3 className="font-semibold text-blue-800">Client Questions</h3>
+                  <p className="text-sm text-blue-700 mb-2">
+                    The client has questions on {Object.keys(messages).length} field(s). Look for the <MessageCircle size={14} className="inline" /> icons to respond.
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {Object.entries(messages).map(([questionId, msgs]) => {
+                      const lastMsg = msgs[msgs.length - 1]
+                      const needsReply = lastMsg?.role === 'client'
+                      return (
+                        <span
+                          key={questionId}
+                          className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
+                            needsReply
+                              ? 'bg-blue-200 text-blue-800'
+                              : 'bg-gray-200 text-gray-700'
+                          }`}
+                        >
+                          {questionId}
+                          {needsReply && <span className="w-2 h-2 bg-blue-500 rounded-full" />}
+                        </span>
+                      )
+                    })}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Export buttons */}
           {Object.keys(responses).length > 0 && (
             <div className="bg-white border border-gray-200 rounded-lg p-4 mb-6">
@@ -1243,6 +1491,9 @@ function ReviewClientDetail() {
                   disabled={true}
                   defaultExpanded={index === 0}
                   dropboxLink={client.dropboxLink}
+                  messages={messages}
+                  onSendMessage={handleSendMessage}
+                  role="attorney"
                 />
               ))}
             </div>

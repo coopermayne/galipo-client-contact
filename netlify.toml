@@ -25,6 +25,16 @@
   status = 200
 
 [[redirects]]
+  from = "/api/save-message"
+  to = "/.netlify/functions/save-message"
+  status = 200
+
+[[redirects]]
+  from = "/api/get-messages"
+  to = "/.netlify/functions/get-messages"
+  status = 200
+
+[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
