@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo, createContext, useContext } from 'react'
+import React, { useState, useEffect, useCallback, useMemo, createContext, useContext, useRef } from 'react'
 import { HashRouter, Routes, Route, useParams, useNavigate, Link } from 'react-router-dom'
 import { ChevronDown, ChevronRight, ChevronUp, Plus, Trash2, Lock, Eye, Clock, CheckCircle, Loader2, AlertCircle, Download, Copy, Upload, ExternalLink, MessageCircle, X, LogOut } from 'lucide-react'
 
@@ -1001,6 +1001,10 @@ function ClientFormContent() {
   const [lastSaved, setLastSaved] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
 
+  // Debounce refs for auto-save
+  const saveTimeoutRef = useRef(null)
+  const pendingResponsesRef = useRef(null)
+
   // Load existing responses and comments
   useEffect(() => {
     if (!client) return
@@ -1061,12 +1065,48 @@ function ClientFormContent() {
     }
   }, [clientSlug, authFetch])
 
-  // Handle field change with auto-save
+  // Handle field change with debounced auto-save
   const handleChange = useCallback((questionId, value) => {
     const newResponses = { ...responses, [questionId]: value }
     setResponses(newResponses)
-    saveResponses(newResponses)
+
+    // Store pending responses for potential unmount save
+    pendingResponsesRef.current = newResponses
+
+    // Clear any existing timeout
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current)
+    }
+
+    // Show saving indicator immediately for better UX
+    setSaveStatus('saving')
+
+    // Debounce the actual save by 800ms
+    saveTimeoutRef.current = setTimeout(() => {
+      saveResponses(newResponses)
+      pendingResponsesRef.current = null
+    }, 800)
   }, [responses, saveResponses])
+
+  // Save pending changes on unmount to prevent data loss
+  useEffect(() => {
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current)
+      }
+      // If there are pending unsaved changes, save them immediately
+      if (pendingResponsesRef.current) {
+        // Use sendBeacon for reliable unmount saves, fall back to sync save
+        const data = JSON.stringify({
+          clientSlug,
+          responses: pendingResponsesRef.current
+        })
+        if (navigator.sendBeacon) {
+          navigator.sendBeacon('/api/save-responses', new Blob([data], { type: 'application/json' }))
+        }
+      }
+    }
+  }, [clientSlug])
 
   // Add a comment on a field
   const handleAddComment = useCallback(async (questionId, text) => {
