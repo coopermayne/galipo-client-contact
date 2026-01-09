@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import { HashRouter, Routes, Route, useParams, useNavigate, Link } from 'react-router-dom'
-import { ChevronDown, ChevronRight, Plus, Trash2, Lock, Eye, Clock, CheckCircle, Loader2, AlertCircle } from 'lucide-react'
+import { ChevronDown, ChevronRight, Plus, Trash2, Lock, Eye, Clock, CheckCircle, Loader2, AlertCircle, Download, Copy } from 'lucide-react'
 
 // ============================================================================
 // CLIENT CONFIGURATIONS
@@ -971,6 +971,76 @@ function ReviewDashboard() {
 }
 
 // ============================================================================
+// EXPORT HELPERS
+// ============================================================================
+
+function formatResponsesAsText(client, responses) {
+  let text = `# ${client.caseName}\n`
+  text += `Case No. ${client.caseNumber}\n`
+  text += `Client: ${client.clientName}\n`
+  text += `Decedent: ${client.decedent} (DOD: ${client.decedentDOD})\n\n`
+  text += `---\n\n`
+
+  for (const section of client.sections) {
+    text += `## ${section.title}\n\n`
+    if (section.description) {
+      text += `_${section.description}_\n\n`
+    }
+
+    for (const question of section.questions) {
+      // Check showIf conditions
+      if (question.showIf) {
+        const parentValue = responses[question.showIf]
+        const expectedValue = question.showIfValue !== undefined ? question.showIfValue : true
+        if (parentValue !== expectedValue) continue
+      }
+
+      const value = responses[question.id]
+      if (value === undefined || value === null || value === '') continue
+
+      text += `**${question.label}**\n`
+
+      if (question.type === 'yesno') {
+        text += value === true ? 'Yes' : value === false ? 'No' : ''
+      } else if (question.type === 'multiselect' && Array.isArray(value)) {
+        text += value.join(', ')
+      } else if (question.type === 'checklist' && typeof value === 'object') {
+        const checked = question.options.filter(opt => value[opt.id])
+        if (checked.length > 0) {
+          text += checked.map(opt => `- ${opt.label}`).join('\n')
+        }
+      } else if (question.type === 'repeatable' && Array.isArray(value)) {
+        value.forEach((entry, idx) => {
+          text += `\n  Entry ${idx + 1}:\n`
+          for (const field of question.fields) {
+            if (entry[field.id]) {
+              text += `    ${field.label}: ${entry[field.id]}\n`
+            }
+          }
+        })
+      } else {
+        text += String(value)
+      }
+      text += '\n\n'
+    }
+  }
+
+  return text
+}
+
+function downloadFile(content, filename, mimeType) {
+  const blob = new Blob([content], { type: mimeType })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
+}
+
+// ============================================================================
 // REVIEW CLIENT DETAIL (READ-ONLY)
 // ============================================================================
 
@@ -980,6 +1050,7 @@ function ReviewClientDetail() {
   const [responses, setResponses] = useState({})
   const [isLoading, setIsLoading] = useState(true)
   const [lastSaved, setLastSaved] = useState(null)
+  const [copyStatus, setCopyStatus] = useState('')
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -1004,6 +1075,41 @@ function ReviewClientDetail() {
 
     loadResponses()
   }, [clientSlug, client])
+
+  const handleDownloadJSON = () => {
+    const exportData = {
+      client: {
+        name: client.clientName,
+        caseName: client.caseName,
+        caseNumber: client.caseNumber,
+        decedent: client.decedent,
+        decedentDOD: client.decedentDOD,
+        deadline: client.deadline
+      },
+      responses,
+      exportedAt: new Date().toISOString(),
+      lastUpdated: lastSaved
+    }
+    const json = JSON.stringify(exportData, null, 2)
+    downloadFile(json, `${clientSlug}-responses.json`, 'application/json')
+  }
+
+  const handleDownloadText = () => {
+    const text = formatResponsesAsText(client, responses)
+    downloadFile(text, `${clientSlug}-responses.md`, 'text/markdown')
+  }
+
+  const handleCopyToClipboard = async () => {
+    const text = formatResponsesAsText(client, responses)
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopyStatus('Copied!')
+      setTimeout(() => setCopyStatus(''), 2000)
+    } catch (err) {
+      setCopyStatus('Failed to copy')
+      setTimeout(() => setCopyStatus(''), 2000)
+    }
+  }
 
   if (!client) {
     return (
@@ -1058,6 +1164,36 @@ function ReviewClientDetail() {
               </div>
             </div>
           </div>
+
+          {/* Export buttons */}
+          {Object.keys(responses).length > 0 && (
+            <div className="bg-white border border-gray-200 rounded-lg p-4 mb-6">
+              <h3 className="font-semibold text-gray-800 mb-3">Export Responses</h3>
+              <div className="flex flex-wrap gap-3">
+                <button
+                  onClick={handleDownloadJSON}
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                >
+                  <Download size={16} /> Download JSON (for AI)
+                </button>
+                <button
+                  onClick={handleDownloadText}
+                  className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
+                >
+                  <Download size={16} /> Download Markdown
+                </button>
+                <button
+                  onClick={handleCopyToClipboard}
+                  className="flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm font-medium"
+                >
+                  <Copy size={16} /> {copyStatus || 'Copy to Clipboard'}
+                </button>
+              </div>
+              <p className="text-xs text-gray-500 mt-2">
+                JSON is ideal for feeding into AI tools. Markdown is formatted for easy reading and printing.
+              </p>
+            </div>
+          )}
 
           {/* Client info */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
