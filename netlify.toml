@@ -1,0 +1,30 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+  functions = "netlify/functions"
+
+[dev]
+  command = "npm run dev"
+  targetPort = 5173
+  port = 8888
+  autoLaunch = false
+
+[[redirects]]
+  from = "/api/get-responses"
+  to = "/.netlify/functions/get-responses"
+  status = 200
+
+[[redirects]]
+  from = "/api/save-responses"
+  to = "/.netlify/functions/save-responses"
+  status = 200
+
+[[redirects]]
+  from = "/api/list-clients"
+  to = "/.netlify/functions/list-clients"
+  status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
