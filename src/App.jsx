@@ -6,7 +6,8 @@ import { ChevronDown, ChevronRight, ChevronUp, Plus, Trash2, Lock, Eye, Clock, C
 // AUTHENTICATION
 // ============================================================================
 
-const ATTORNEY_PASSWORD = 'Atty3232'
+const ATTORNEY_PASSWORD = import.meta.env.VITE_ATTY_PASSWORD || ''
+const CLIENT_PASSWORD_SUFFIX = import.meta.env.VITE_CLIENT_SUFFIX || ''
 
 // ============================================================================
 // CLIENT CONFIGURATIONS
@@ -20,7 +21,7 @@ const CLIENTS = {
     decedent: 'Dominick Alvarado',
     decedentDOD: 'July 21, 2023',
     deadline: 'January 26, 2026',
-    clientPassword: 'Pool2026',
+    passwordPrefix: 'Pool',
     dropboxLink: 'https://www.dropbox.com/request/9hnjYKu87tKg0a8T8FD8',
     sections: [
       {
@@ -1023,7 +1024,7 @@ function ClientForm() {
   return (
     <PasswordGate
       storageKey={`auth-${clientSlug}`}
-      correctPassword={client.clientPassword}
+      correctPassword={client.passwordPrefix + CLIENT_PASSWORD_SUFFIX}
       title="Client Portal"
     >
       <div className="min-h-screen bg-gray-100">
