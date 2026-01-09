@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo, createContext, useContext, useRef } from 'react'
-import { HashRouter, Routes, Route, useParams, useNavigate, Link } from 'react-router-dom'
+import { HashRouter, Routes, Route, useParams, useNavigate, Navigate } from 'react-router-dom'
 import { ChevronDown, ChevronRight, ChevronUp, Plus, Trash2, Lock, Eye, Clock, CheckCircle, Loader2, AlertCircle, Download, Copy, Upload, ExternalLink, MessageCircle, X, LogOut } from 'lucide-react'
 
 // ============================================================================
@@ -1942,80 +1942,15 @@ function ReviewClientDetail() {
 }
 
 // ============================================================================
-// HOME PAGE
-// ============================================================================
-
-function HomePage() {
-  return (
-    <div className="min-h-screen bg-gray-100 p-4">
-      <div className="max-w-2xl mx-auto">
-        <div className="bg-white rounded-lg shadow-lg p-8 mb-6">
-          <div className="flex justify-between items-start">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-800 mb-2">Client Intake System</h1>
-              <p className="text-gray-600">
-                Secure portal for collecting interrogatory responses from clients in civil rights cases.
-              </p>
-            </div>
-            <LogoutButton />
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">Attorney Pages</h2>
-          <div className="space-y-2">
-            <Link
-              to="/review"
-              className="block p-3 bg-gray-50 hover:bg-gray-100 rounded-lg border border-gray-200 transition-colors"
-            >
-              <span className="font-medium text-gray-800">/review</span>
-              <span className="text-gray-500 text-sm ml-2">- View all client submissions</span>
-            </Link>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">Client Forms</h2>
-          <div className="space-y-2">
-            {Object.entries(CLIENTS).map(([slug, client]) => (
-              <Link
-                key={slug}
-                to={`/${slug}`}
-                className="block p-3 bg-gray-50 hover:bg-gray-100 rounded-lg border border-gray-200 transition-colors"
-              >
-                <span className="font-medium text-gray-800">/{slug}</span>
-                <span className="text-gray-500 text-sm ml-2">- {client.clientName}</span>
-                <p className="text-xs text-gray-400 mt-1">{client.caseName}</p>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// ============================================================================
 // MAIN APP WITH ROUTING
 // ============================================================================
-
-// Wrapper for attorney-only home page
-function HomePageProtected() {
-  const { isAuthenticated, isAttorney } = useAuth()
-
-  if (!isAuthenticated || !isAttorney) {
-    return <LoginForm title="Attorney Access" />
-  }
-
-  return <HomePage />
-}
 
 export default function App() {
   return (
     <AuthProvider>
       <HashRouter>
         <Routes>
-          <Route path="/" element={<HomePageProtected />} />
+          <Route path="/" element={<Navigate to="/review" replace />} />
           <Route path="/review" element={<ReviewDashboard />} />
           <Route path="/review/:clientSlug" element={<ReviewClientDetail />} />
           <Route path="/:clientSlug" element={<ClientForm />} />
