@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import { HashRouter, Routes, Route, useParams, useNavigate, Link } from 'react-router-dom'
-import { ChevronDown, ChevronRight, Plus, Trash2, Lock, Eye, Clock, CheckCircle, Loader2, AlertCircle, Download, Copy } from 'lucide-react'
+import { ChevronDown, ChevronRight, Plus, Trash2, Lock, Eye, Clock, CheckCircle, Loader2, AlertCircle, Download, Copy, Upload, ExternalLink } from 'lucide-react'
 
 // ============================================================================
 // CLIENT CONFIGURATIONS
@@ -15,6 +15,7 @@ const CLIENTS = {
     decedentDOD: 'July 21, 2023',
     deadline: 'January 26, 2026',
     clientPassword: '',
+    dropboxLink: 'https://www.dropbox.com/request/9hnjYKu87tKg0a8T8FD8',
     sections: [
       {
         id: 'basic-info',
@@ -565,7 +566,7 @@ function Question({ question, value, onChange, responses, disabled }) {
   )
 }
 
-function Section({ section, responses, onChange, disabled, defaultExpanded = false }) {
+function Section({ section, responses, onChange, disabled, defaultExpanded = false, dropboxLink }) {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded)
 
   return (
@@ -582,6 +583,23 @@ function Section({ section, responses, onChange, disabled, defaultExpanded = fal
         <div className="px-6 py-4">
           {section.description && (
             <p className="text-gray-600 text-sm mb-4 pb-4 border-b border-gray-100">{section.description}</p>
+          )}
+          {section.id === 'documents-checklist' && dropboxLink && (
+            <a
+              href={dropboxLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-4 p-4 mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg hover:from-blue-100 hover:to-indigo-100 hover:border-blue-300 transition-all group"
+            >
+              <div className="flex-shrink-0 w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center group-hover:bg-blue-700 transition-colors">
+                <Upload className="text-white" size={24} />
+              </div>
+              <div className="flex-grow">
+                <h3 className="font-semibold text-gray-800 group-hover:text-blue-800">Upload Your Documents</h3>
+                <p className="text-sm text-gray-600">Click here to securely upload your documents via Dropbox</p>
+              </div>
+              <ExternalLink className="text-blue-500 group-hover:text-blue-700 flex-shrink-0" size={20} />
+            </a>
           )}
           {section.questions.map(question => (
             <Question
@@ -832,6 +850,7 @@ function ClientForm() {
                     onChange={handleChange}
                     disabled={false}
                     defaultExpanded={index === 0}
+                    dropboxLink={client.dropboxLink}
                   />
                 ))}
               </div>
@@ -1223,6 +1242,7 @@ function ReviewClientDetail() {
                   onChange={() => {}} // No-op for read-only
                   disabled={true}
                   defaultExpanded={index === 0}
+                  dropboxLink={client.dropboxLink}
                 />
               ))}
             </div>
