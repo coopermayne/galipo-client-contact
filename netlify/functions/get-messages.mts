@@ -1,33 +1,37 @@
 import { getStore } from '@netlify/blobs'
 import type { Context } from '@netlify/functions'
+import { requireAuth, corsHeaders } from './auth-helpers.mts'
 
 export default async (request: Request, context: Context) => {
   // Handle CORS
   if (request.method === 'OPTIONS') {
     return new Response(null, {
       status: 204,
+      headers: corsHeaders(),
+    })
+  }
+
+  // Get clientSlug first (needed for auth check)
+  const url = new URL(request.url)
+  const clientSlug = url.searchParams.get('clientSlug')
+
+  if (!clientSlug) {
+    return new Response(JSON.stringify({ error: 'Missing clientSlug parameter' }), {
+      status: 400,
       headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type',
+        'Content-Type': 'application/json',
+        ...corsHeaders(),
       },
     })
   }
 
+  // Verify authentication
+  const auth = await requireAuth(request, { requiredClientSlug: clientSlug })
+  if (auth instanceof Response) {
+    return auth
+  }
+
   try {
-    const url = new URL(request.url)
-    const clientSlug = url.searchParams.get('clientSlug')
-
-    if (!clientSlug) {
-      return new Response(JSON.stringify({ error: 'Missing clientSlug parameter' }), {
-        status: 400,
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
-        },
-      })
-    }
-
     const store = getStore('client-responses')
     const key = `messages-${clientSlug}`
 
@@ -38,7 +42,7 @@ export default async (request: Request, context: Context) => {
         status: 200,
         headers: {
           'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
+          ...corsHeaders(),
         },
       })
     }
@@ -47,7 +51,7 @@ export default async (request: Request, context: Context) => {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
+        ...corsHeaders(),
       },
     })
   } catch (error) {
@@ -56,7 +60,7 @@ export default async (request: Request, context: Context) => {
       status: 500,
       headers: {
         'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
+        ...corsHeaders(),
       },
     })
   }

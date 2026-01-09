@@ -1,17 +1,20 @@
 import { getStore } from '@netlify/blobs'
 import type { Context } from '@netlify/functions'
+import { requireAuth, corsHeaders } from './auth-helpers.mts'
 
 export default async (request: Request, context: Context) => {
   // Handle CORS
   if (request.method === 'OPTIONS') {
     return new Response(null, {
       status: 204,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type',
-      },
+      headers: corsHeaders(),
     })
+  }
+
+  // Verify authentication - only attorneys can list all clients
+  const auth = await requireAuth(request, { allowedRoles: ['attorney'] })
+  if (auth instanceof Response) {
+    return auth
   }
 
   try {
@@ -39,7 +42,7 @@ export default async (request: Request, context: Context) => {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
+        ...corsHeaders(),
       },
     })
   } catch (error) {
@@ -48,7 +51,7 @@ export default async (request: Request, context: Context) => {
       status: 500,
       headers: {
         'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
+        ...corsHeaders(),
       },
     })
   }

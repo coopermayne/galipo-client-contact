@@ -1,5 +1,6 @@
 import { getStore } from '@netlify/blobs'
 import type { Context } from '@netlify/functions'
+import { requireAuth, corsHeaders } from './auth-helpers.mts'
 
 interface Message {
   role: 'client' | 'attorney'
@@ -16,11 +17,7 @@ export default async (request: Request, context: Context) => {
   if (request.method === 'OPTIONS') {
     return new Response(null, {
       status: 204,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type',
-      },
+      headers: corsHeaders(),
     })
   }
 
@@ -29,7 +26,7 @@ export default async (request: Request, context: Context) => {
       status: 405,
       headers: {
         'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
+        ...corsHeaders(),
       },
     })
   }
@@ -43,7 +40,7 @@ export default async (request: Request, context: Context) => {
         status: 400,
         headers: {
           'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
+          ...corsHeaders(),
         },
       })
     }
@@ -53,7 +50,24 @@ export default async (request: Request, context: Context) => {
         status: 400,
         headers: {
           'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
+          ...corsHeaders(),
+        },
+      })
+    }
+
+    // Verify authentication
+    const auth = await requireAuth(request, { requiredClientSlug: clientSlug })
+    if (auth instanceof Response) {
+      return auth
+    }
+
+    // Ensure the role in the message matches the authenticated user's role
+    if (auth.role !== role) {
+      return new Response(JSON.stringify({ error: 'Role mismatch: cannot post as different role' }), {
+        status: 403,
+        headers: {
+          'Content-Type': 'application/json',
+          ...corsHeaders(),
         },
       })
     }
@@ -91,7 +105,7 @@ export default async (request: Request, context: Context) => {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
+        ...corsHeaders(),
       },
     })
   } catch (error) {
@@ -100,7 +114,7 @@ export default async (request: Request, context: Context) => {
       status: 500,
       headers: {
         'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
+        ...corsHeaders(),
       },
     })
   }

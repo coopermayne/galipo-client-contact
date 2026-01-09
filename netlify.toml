@@ -40,6 +40,11 @@
   status = 200
 
 [[redirects]]
+  from = "/api/auth/login"
+  to = "/.netlify/functions/auth-login"
+  status = 200
+
+[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200

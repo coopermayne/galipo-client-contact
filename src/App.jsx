@@ -1,13 +1,122 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react'
+import React, { useState, useEffect, useCallback, useMemo, createContext, useContext } from 'react'
 import { HashRouter, Routes, Route, useParams, useNavigate, Link } from 'react-router-dom'
-import { ChevronDown, ChevronRight, ChevronUp, Plus, Trash2, Lock, Eye, Clock, CheckCircle, Loader2, AlertCircle, Download, Copy, Upload, ExternalLink, MessageCircle, X } from 'lucide-react'
+import { ChevronDown, ChevronRight, ChevronUp, Plus, Trash2, Lock, Eye, Clock, CheckCircle, Loader2, AlertCircle, Download, Copy, Upload, ExternalLink, MessageCircle, X, LogOut } from 'lucide-react'
 
 // ============================================================================
-// AUTHENTICATION
+// AUTHENTICATION CONTEXT
 // ============================================================================
 
-const ATTORNEY_PASSWORD = import.meta.env.VITE_ATTY_PASSWORD || ''
-const CLIENT_PASSWORD_SUFFIX = import.meta.env.VITE_CLIENT_SUFFIX || ''
+const AuthContext = createContext(null)
+
+function useAuth() {
+  const context = useContext(AuthContext)
+  if (!context) {
+    throw new Error('useAuth must be used within AuthProvider')
+  }
+  return context
+}
+
+function AuthProvider({ children }) {
+  const [token, setToken] = useState(() => localStorage.getItem('authToken'))
+  const [role, setRole] = useState(() => localStorage.getItem('authRole'))
+  const [clientSlug, setClientSlug] = useState(() => localStorage.getItem('authClientSlug'))
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  const login = async (password, targetClientSlug = null) => {
+    setIsLoading(true)
+    setError('')
+
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password, clientSlug: targetClientSlug })
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Login failed')
+      }
+
+      // Store auth data
+      localStorage.setItem('authToken', data.token)
+      localStorage.setItem('authRole', data.role)
+      if (data.clientSlug) {
+        localStorage.setItem('authClientSlug', data.clientSlug)
+      }
+
+      setToken(data.token)
+      setRole(data.role)
+      setClientSlug(data.clientSlug || null)
+
+      return { success: true, role: data.role }
+    } catch (err) {
+      setError(err.message)
+      return { success: false, error: err.message }
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const logout = () => {
+    localStorage.removeItem('authToken')
+    localStorage.removeItem('authRole')
+    localStorage.removeItem('authClientSlug')
+    setToken(null)
+    setRole(null)
+    setClientSlug(null)
+  }
+
+  // Helper for authenticated fetch
+  const authFetch = async (url, options = {}) => {
+    const headers = {
+      ...options.headers,
+      'Authorization': `Bearer ${token}`
+    }
+
+    const res = await fetch(url, { ...options, headers })
+
+    // Handle token expiration
+    if (res.status === 401) {
+      logout()
+      throw new Error('Session expired. Please log in again.')
+    }
+
+    return res
+  }
+
+  const isAuthenticated = !!token
+  const isAttorney = role === 'attorney'
+  const isClient = role === 'client'
+
+  // Check if current user can access a specific client's data
+  const canAccessClient = (targetSlug) => {
+    if (isAttorney) return true
+    if (isClient && clientSlug === targetSlug) return true
+    return false
+  }
+
+  return (
+    <AuthContext.Provider value={{
+      token,
+      role,
+      clientSlug,
+      isAuthenticated,
+      isAttorney,
+      isClient,
+      isLoading,
+      error,
+      login,
+      logout,
+      authFetch,
+      canAccessClient
+    }}>
+      {children}
+    </AuthContext.Provider>
+  )
+}
 
 // ============================================================================
 // CLIENT CONFIGURATIONS
@@ -808,39 +917,19 @@ function Section({ section, responses, onChange, disabled, defaultExpanded = fal
 }
 
 // ============================================================================
-// PASSWORD PROTECTION
+// LOGIN FORM
 // ============================================================================
 
-function PasswordGate({ children, storageKey, correctPassword, title }) {
+function LoginForm({ title, clientSlug = null, onSuccess }) {
   const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const { login, isLoading, error } = useAuth()
 
-  useEffect(() => {
-    // Auto-authenticate if no password is set
-    if (!correctPassword) {
-      setIsAuthenticated(true)
-      return
-    }
-    const saved = sessionStorage.getItem(storageKey)
-    if (saved === 'true') {
-      setIsAuthenticated(true)
-    }
-  }, [storageKey, correctPassword])
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    if (password === correctPassword) {
-      sessionStorage.setItem(storageKey, 'true')
-      setIsAuthenticated(true)
-      setError('')
-    } else {
-      setError('Incorrect password. Please try again.')
+    const result = await login(password, clientSlug)
+    if (result.success && onSuccess) {
+      onSuccess(result.role)
     }
-  }
-
-  if (isAuthenticated) {
-    return children
   }
 
   return (
@@ -861,12 +950,20 @@ function PasswordGate({ children, storageKey, correctPassword, title }) {
             placeholder="Enter password"
             className="input-field mb-4"
             autoFocus
+            disabled={isLoading}
           />
           {error && (
             <p className="text-red-500 text-sm mb-4">{error}</p>
           )}
-          <button type="submit" className="btn-primary w-full">
-            Continue
+          <button type="submit" className="btn-primary w-full" disabled={isLoading}>
+            {isLoading ? (
+              <span className="flex items-center justify-center gap-2">
+                <Loader2 className="animate-spin" size={16} />
+                Verifying...
+              </span>
+            ) : (
+              'Continue'
+            )}
           </button>
         </form>
       </div>
@@ -874,13 +971,30 @@ function PasswordGate({ children, storageKey, correctPassword, title }) {
   )
 }
 
+// Logout button component
+function LogoutButton() {
+  const { logout } = useAuth()
+
+  return (
+    <button
+      onClick={logout}
+      className="flex items-center gap-1 text-gray-500 hover:text-gray-700 text-sm"
+      title="Log out"
+    >
+      <LogOut size={16} />
+      <span className="hidden sm:inline">Log out</span>
+    </button>
+  )
+}
+
 // ============================================================================
 // CLIENT FORM PAGE
 // ============================================================================
 
-function ClientForm() {
+function ClientFormContent() {
   const { clientSlug } = useParams()
   const client = CLIENTS[clientSlug]
+  const { authFetch } = useAuth()
   const [responses, setResponses] = useState({})
   const [comments, setComments] = useState({})
   const [saveStatus, setSaveStatus] = useState('idle') // idle, saving, saved, error
@@ -894,8 +1008,8 @@ function ClientForm() {
     const loadData = async () => {
       try {
         const [responsesRes, commentsRes] = await Promise.all([
-          fetch(`/api/get-responses?clientSlug=${clientSlug}`),
-          fetch(`/api/get-messages?clientSlug=${clientSlug}`)
+          authFetch(`/api/get-responses?clientSlug=${clientSlug}`),
+          authFetch(`/api/get-messages?clientSlug=${clientSlug}`)
         ])
 
         if (responsesRes.ok) {
@@ -920,13 +1034,13 @@ function ClientForm() {
     }
 
     loadData()
-  }, [clientSlug, client])
+  }, [clientSlug, client, authFetch])
 
   // Auto-save function
   const saveResponses = useCallback(async (newResponses) => {
     setSaveStatus('saving')
     try {
-      const res = await fetch('/api/save-responses', {
+      const res = await authFetch('/api/save-responses', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -945,7 +1059,7 @@ function ClientForm() {
       console.error('Failed to save:', err)
       setSaveStatus('error')
     }
-  }, [clientSlug])
+  }, [clientSlug, authFetch])
 
   // Handle field change with auto-save
   const handleChange = useCallback((questionId, value) => {
@@ -957,7 +1071,7 @@ function ClientForm() {
   // Add a comment on a field
   const handleAddComment = useCallback(async (questionId, text) => {
     try {
-      const res = await fetch('/api/save-message', {
+      const res = await authFetch('/api/save-message', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -977,12 +1091,12 @@ function ClientForm() {
     } catch (err) {
       console.error('Failed to add comment:', err)
     }
-  }, [clientSlug])
+  }, [clientSlug, authFetch])
 
   // Resolve (delete) a comment
   const handleResolveComment = useCallback(async (questionId, commentIndex) => {
     try {
-      const res = await fetch('/api/resolve-comment', {
+      const res = await authFetch('/api/resolve-comment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1000,7 +1114,7 @@ function ClientForm() {
     } catch (err) {
       console.error('Failed to resolve comment:', err)
     }
-  }, [clientSlug])
+  }, [clientSlug, authFetch])
 
   if (!client) {
     return (
@@ -1022,31 +1136,27 @@ function ClientForm() {
   }, [client.sections, responses])
 
   return (
-    <PasswordGate
-      storageKey={`auth-${clientSlug}`}
-      correctPassword={client.passwordPrefix + CLIENT_PASSWORD_SUFFIX}
-      title="Client Portal"
-    >
-      <div className="min-h-screen bg-gray-100">
-          {/* Header */}
-          <header className="bg-white shadow-sm sticky top-0 z-10">
-            <div className="max-w-4xl mx-auto px-4 py-4">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-              <div>
-                <h1 className="text-xl font-bold text-gray-800">{client.caseName}</h1>
-                <p className="text-sm text-gray-600">Case No. {client.caseNumber}</p>
+    <div className="min-h-screen bg-gray-100">
+        {/* Header */}
+        <header className="bg-white shadow-sm sticky top-0 z-10">
+          <div className="max-w-4xl mx-auto px-4 py-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <div>
+              <h1 className="text-xl font-bold text-gray-800">{client.caseName}</h1>
+              <p className="text-sm text-gray-600">Case No. {client.caseNumber}</p>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${
+                daysUntilDeadline <= 7 ? 'bg-red-100 text-red-700' :
+                daysUntilDeadline <= 14 ? 'bg-yellow-100 text-yellow-700' :
+                'bg-green-100 text-green-700'
+              }`}>
+                <Clock size={16} />
+                Due: {client.deadline}
               </div>
-              <div className="flex items-center gap-4">
-                <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${
-                  daysUntilDeadline <= 7 ? 'bg-red-100 text-red-700' :
-                  daysUntilDeadline <= 14 ? 'bg-yellow-100 text-yellow-700' :
-                  'bg-green-100 text-green-700'
-                }`}>
-                  <Clock size={16} />
-                  Due: {client.deadline}
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  {saveStatus === 'saving' && (
+              <LogoutButton />
+              <div className="flex items-center gap-2 text-sm">
+                {saveStatus === 'saving' && (
                     <>
                       <Loader2 size={16} className="animate-spin text-blue-500" />
                       <span className="text-blue-600">Saving...</span>
@@ -1156,19 +1266,46 @@ function ClientForm() {
             </>
           )}
         </main>
-      </div>
-    </PasswordGate>
+    </div>
   )
+}
+
+// Wrapper component that handles auth for client form
+function ClientForm() {
+  const { clientSlug } = useParams()
+  const client = CLIENTS[clientSlug]
+  const { isAuthenticated, canAccessClient } = useAuth()
+
+  // If client doesn't exist, show error
+  if (!client) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+        <div className="bg-white rounded-lg shadow-lg p-8 text-center">
+          <AlertCircle className="mx-auto text-red-500 mb-4" size={48} />
+          <h1 className="text-2xl font-bold text-gray-800 mb-2">Client Not Found</h1>
+          <p className="text-gray-600">The requested client form does not exist.</p>
+        </div>
+      </div>
+    )
+  }
+
+  // If not authenticated or can't access this client, show login
+  if (!isAuthenticated || !canAccessClient(clientSlug)) {
+    return <LoginForm title="Client Portal" clientSlug={clientSlug} />
+  }
+
+  return <ClientFormContent />
 }
 
 // ============================================================================
 // REVIEW DASHBOARD (LIST ALL CLIENTS)
 // ============================================================================
 
-function ReviewDashboard() {
+function ReviewDashboardContent() {
   const [clientsData, setClientsData] = useState({})
   const [isLoading, setIsLoading] = useState(true)
   const navigate = useNavigate()
+  const { authFetch } = useAuth()
 
   useEffect(() => {
     const loadClientsData = async () => {
@@ -1178,7 +1315,7 @@ function ReviewDashboard() {
         const responses = await Promise.all(
           clientSlugs.map(async (slug) => {
             try {
-              const res = await fetch(`/api/get-responses?clientSlug=${slug}`)
+              const res = await authFetch(`/api/get-responses?clientSlug=${slug}`)
               if (res.ok) {
                 const data = await res.json()
                 return { slug, responses: data.responses || {}, updatedAt: data.updatedAt }
@@ -1203,7 +1340,7 @@ function ReviewDashboard() {
     }
 
     loadClientsData()
-  }, [])
+  }, [authFetch])
 
   // Build client list with progress
   const allClients = useMemo(() => {
@@ -1231,18 +1368,16 @@ function ReviewDashboard() {
   }, [clientsData])
 
   return (
-    <PasswordGate
-      storageKey="auth-attorney-review"
-      correctPassword={ATTORNEY_PASSWORD}
-      title="Attorney Review Portal"
-    >
-      <div className="min-h-screen bg-gray-100">
-        <header className="bg-white shadow-sm">
-          <div className="max-w-4xl mx-auto px-4 py-4">
+    <div className="min-h-screen bg-gray-100">
+      <header className="bg-white shadow-sm">
+        <div className="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
+          <div>
             <h1 className="text-xl font-bold text-gray-800">Client Responses Review</h1>
             <p className="text-sm text-gray-600">View submitted interrogatory responses</p>
           </div>
-        </header>
+          <LogoutButton />
+        </div>
+      </header>
 
         <main className="max-w-4xl mx-auto px-4 py-6">
           {isLoading ? (
@@ -1311,9 +1446,19 @@ function ReviewDashboard() {
             </div>
           )}
         </main>
-      </div>
-    </PasswordGate>
+    </div>
   )
+}
+
+// Wrapper for attorney-only review dashboard
+function ReviewDashboard() {
+  const { isAuthenticated, isAttorney } = useAuth()
+
+  if (!isAuthenticated || !isAttorney) {
+    return <LoginForm title="Attorney Review Portal" />
+  }
+
+  return <ReviewDashboardContent />
 }
 
 // ============================================================================
@@ -1390,9 +1535,10 @@ function downloadFile(content, filename, mimeType) {
 // REVIEW CLIENT DETAIL (READ-ONLY)
 // ============================================================================
 
-function ReviewClientDetail() {
+function ReviewClientDetailContent() {
   const { clientSlug } = useParams()
   const client = CLIENTS[clientSlug]
+  const { authFetch } = useAuth()
   const [responses, setResponses] = useState({})
   const [comments, setComments] = useState({})
   const [isLoading, setIsLoading] = useState(true)
@@ -1433,8 +1579,8 @@ function ReviewClientDetail() {
     const loadData = async () => {
       try {
         const [responsesRes, commentsRes] = await Promise.all([
-          fetch(`/api/get-responses?clientSlug=${clientSlug}`),
-          fetch(`/api/get-messages?clientSlug=${clientSlug}`)
+          authFetch(`/api/get-responses?clientSlug=${clientSlug}`),
+          authFetch(`/api/get-messages?clientSlug=${clientSlug}`)
         ])
 
         if (responsesRes.ok) {
@@ -1459,12 +1605,12 @@ function ReviewClientDetail() {
     }
 
     loadData()
-  }, [clientSlug, client])
+  }, [clientSlug, client, authFetch])
 
   // Add a comment on a field (attorney)
   const handleAddComment = useCallback(async (questionId, text) => {
     try {
-      const res = await fetch('/api/save-message', {
+      const res = await authFetch('/api/save-message', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1484,12 +1630,12 @@ function ReviewClientDetail() {
     } catch (err) {
       console.error('Failed to add comment:', err)
     }
-  }, [clientSlug])
+  }, [clientSlug, authFetch])
 
   // Resolve (delete) a comment
   const handleResolveComment = useCallback(async (questionId, commentIndex) => {
     try {
-      const res = await fetch('/api/resolve-comment', {
+      const res = await authFetch('/api/resolve-comment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1507,7 +1653,7 @@ function ReviewClientDetail() {
     } catch (err) {
       console.error('Failed to resolve comment:', err)
     }
-  }, [clientSlug])
+  }, [clientSlug, authFetch])
 
   const handleDownloadJSON = () => {
     const exportData = {
@@ -1557,31 +1703,29 @@ function ReviewClientDetail() {
   }
 
   return (
-    <PasswordGate
-      storageKey="auth-attorney-review"
-      correctPassword={ATTORNEY_PASSWORD}
-      title="Attorney Review Portal"
-    >
-      <div className="min-h-screen bg-gray-100">
-        <header className="bg-white shadow-sm sticky top-0 z-10">
-          <div className="max-w-4xl mx-auto px-4 py-4">
+    <div className="min-h-screen bg-gray-100">
+      <header className="bg-white shadow-sm sticky top-0 z-10">
+        <div className="max-w-4xl mx-auto px-4 py-4">
+          <div className="flex justify-between items-start mb-2">
             <button
               onClick={() => navigate('/review')}
-              className="text-blue-600 hover:text-blue-700 text-sm font-medium mb-2"
+              className="text-blue-600 hover:text-blue-700 text-sm font-medium"
             >
               &larr; Back to All Clients
             </button>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-              <div>
-                <h1 className="text-xl font-bold text-gray-800">{client.clientName}</h1>
-                <p className="text-sm text-gray-600">{client.caseName} - Case No. {client.caseNumber}</p>
-              </div>
-              <div className="flex items-center gap-2 px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-medium">
-                <Eye size={16} /> Read-Only View
-              </div>
+            <LogoutButton />
+          </div>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <div>
+              <h1 className="text-xl font-bold text-gray-800">{client.clientName}</h1>
+              <p className="text-sm text-gray-600">{client.caseName} - Case No. {client.caseNumber}</p>
+            </div>
+            <div className="flex items-center gap-2 px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-medium">
+              <Eye size={16} /> Read-Only View
             </div>
           </div>
-        </header>
+        </div>
+      </header>
 
         <main className="max-w-4xl mx-auto px-4 py-6">
           {/* Info box */}
@@ -1727,9 +1871,34 @@ function ReviewClientDetail() {
             </div>
           )}
         </main>
-      </div>
-    </PasswordGate>
+    </div>
   )
+}
+
+// Wrapper for attorney-only client detail view
+function ReviewClientDetail() {
+  const { clientSlug } = useParams()
+  const client = CLIENTS[clientSlug]
+  const { isAuthenticated, isAttorney } = useAuth()
+
+  // If client doesn't exist, show error
+  if (!client) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+        <div className="bg-white rounded-lg shadow-lg p-8 text-center">
+          <AlertCircle className="mx-auto text-red-500 mb-4" size={48} />
+          <h1 className="text-2xl font-bold text-gray-800 mb-2">Client Not Found</h1>
+          <p className="text-gray-600">The requested client does not exist.</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!isAuthenticated || !isAttorney) {
+    return <LoginForm title="Attorney Review Portal" />
+  }
+
+  return <ReviewClientDetailContent />
 }
 
 // ============================================================================
@@ -1741,10 +1910,15 @@ function HomePage() {
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="max-w-2xl mx-auto">
         <div className="bg-white rounded-lg shadow-lg p-8 mb-6">
-          <h1 className="text-2xl font-bold text-gray-800 mb-2">Client Intake System</h1>
-          <p className="text-gray-600">
-            Secure portal for collecting interrogatory responses from clients in civil rights cases.
-          </p>
+          <div className="flex justify-between items-start">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-800 mb-2">Client Intake System</h1>
+              <p className="text-gray-600">
+                Secure portal for collecting interrogatory responses from clients in civil rights cases.
+              </p>
+            </div>
+            <LogoutButton />
+          </div>
         </div>
 
         <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
@@ -1782,34 +1956,31 @@ function HomePage() {
 }
 
 // ============================================================================
-// ATTORNEY-PROTECTED WRAPPER
-// ============================================================================
-
-function AttorneyGate({ children }) {
-  return (
-    <PasswordGate
-      storageKey="auth-attorney-review"
-      correctPassword={ATTORNEY_PASSWORD}
-      title="Attorney Access"
-    >
-      {children}
-    </PasswordGate>
-  )
-}
-
-// ============================================================================
 // MAIN APP WITH ROUTING
 // ============================================================================
 
+// Wrapper for attorney-only home page
+function HomePageProtected() {
+  const { isAuthenticated, isAttorney } = useAuth()
+
+  if (!isAuthenticated || !isAttorney) {
+    return <LoginForm title="Attorney Access" />
+  }
+
+  return <HomePage />
+}
+
 export default function App() {
   return (
-    <HashRouter>
-      <Routes>
-        <Route path="/" element={<AttorneyGate><HomePage /></AttorneyGate>} />
-        <Route path="/review" element={<AttorneyGate><ReviewDashboard /></AttorneyGate>} />
-        <Route path="/review/:clientSlug" element={<AttorneyGate><ReviewClientDetail /></AttorneyGate>} />
-        <Route path="/:clientSlug" element={<ClientForm />} />
-      </Routes>
-    </HashRouter>
+    <AuthProvider>
+      <HashRouter>
+        <Routes>
+          <Route path="/" element={<HomePageProtected />} />
+          <Route path="/review" element={<ReviewDashboard />} />
+          <Route path="/review/:clientSlug" element={<ReviewClientDetail />} />
+          <Route path="/:clientSlug" element={<ClientForm />} />
+        </Routes>
+      </HashRouter>
+    </AuthProvider>
   )
 }
