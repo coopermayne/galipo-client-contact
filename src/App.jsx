@@ -3,6 +3,12 @@ import { HashRouter, Routes, Route, useParams, useNavigate, Link } from 'react-r
 import { ChevronDown, ChevronRight, ChevronUp, Plus, Trash2, Lock, Eye, Clock, CheckCircle, Loader2, AlertCircle, Download, Copy, Upload, ExternalLink, MessageCircle, X } from 'lucide-react'
 
 // ============================================================================
+// AUTHENTICATION
+// ============================================================================
+
+const ATTORNEY_PASSWORD = 'Atty3232'
+
+// ============================================================================
 // CLIENT CONFIGURATIONS
 // ============================================================================
 
@@ -14,7 +20,7 @@ const CLIENTS = {
     decedent: 'Dominick Alvarado',
     decedentDOD: 'July 21, 2023',
     deadline: 'January 26, 2026',
-    clientPassword: '',
+    clientPassword: 'Pool2026',
     dropboxLink: 'https://www.dropbox.com/request/9hnjYKu87tKg0a8T8FD8',
     sections: [
       {
@@ -1777,6 +1783,22 @@ function HomePage() {
 }
 
 // ============================================================================
+// ATTORNEY-PROTECTED WRAPPER
+// ============================================================================
+
+function AttorneyGate({ children }) {
+  return (
+    <PasswordGate
+      storageKey="auth-attorney-review"
+      correctPassword={ATTORNEY_PASSWORD}
+      title="Attorney Access"
+    >
+      {children}
+    </PasswordGate>
+  )
+}
+
+// ============================================================================
 // MAIN APP WITH ROUTING
 // ============================================================================
 
@@ -1784,9 +1806,9 @@ export default function App() {
   return (
     <HashRouter>
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/review" element={<ReviewDashboard />} />
-        <Route path="/review/:clientSlug" element={<ReviewClientDetail />} />
+        <Route path="/" element={<AttorneyGate><HomePage /></AttorneyGate>} />
+        <Route path="/review" element={<AttorneyGate><ReviewDashboard /></AttorneyGate>} />
+        <Route path="/review/:clientSlug" element={<AttorneyGate><ReviewClientDetail /></AttorneyGate>} />
         <Route path="/:clientSlug" element={<ClientForm />} />
       </Routes>
     </HashRouter>
