@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import { HashRouter, Routes, Route, useParams, useNavigate, Link } from 'react-router-dom'
-import { ChevronDown, ChevronRight, Plus, Trash2, Lock, Eye, Clock, CheckCircle, Loader2, AlertCircle, Download, Copy, Upload, ExternalLink, MessageCircle, X } from 'lucide-react'
+import { ChevronDown, ChevronRight, ChevronUp, Plus, Trash2, Lock, Eye, Clock, CheckCircle, Loader2, AlertCircle, Download, Copy, Upload, ExternalLink, MessageCircle, X } from 'lucide-react'
 
 // ============================================================================
 // CLIENT CONFIGURATIONS
@@ -729,7 +729,7 @@ function Question({ question, value, onChange, responses, disabled, comments, on
   }
 
   return (
-    <div className="py-4 border-b border-gray-100 last:border-b-0">
+    <div id={`question-${question.id}`} className="py-4 border-b border-gray-100 last:border-b-0 scroll-mt-32">
       <div className="flex items-start justify-between gap-2 mb-2">
         <label className="block text-gray-800 font-medium">{question.label}</label>
         {onAddComment && (
@@ -1011,6 +1011,11 @@ function ClientForm() {
 
   const daysUntilDeadline = getDaysUntilDeadline(client.deadline)
 
+  // Calculate progress in real-time
+  const progress = useMemo(() => {
+    return calculateProgress(client.sections, responses)
+  }, [client.sections, responses])
+
   return (
     <PasswordGate
       storageKey={`auth-${clientSlug}`}
@@ -1018,9 +1023,9 @@ function ClientForm() {
       title="Client Portal"
     >
       <div className="min-h-screen bg-gray-100">
-        {/* Header */}
-        <header className="bg-white shadow-sm sticky top-0 z-10">
-          <div className="max-w-4xl mx-auto px-4 py-4">
+          {/* Header */}
+          <header className="bg-white shadow-sm sticky top-0 z-10">
+            <div className="max-w-4xl mx-auto px-4 py-4">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <div>
                 <h1 className="text-xl font-bold text-gray-800">{client.caseName}</h1>
@@ -1055,6 +1060,31 @@ function ClientForm() {
                     </>
                   )}
                 </div>
+              </div>
+            </div>
+            {/* Progress bar in header - visible on all screen sizes */}
+            <div className="mt-3">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs font-medium text-gray-500">Form Progress</span>
+                <span className={`text-xs font-semibold ${
+                  progress === 100 ? 'text-green-600' :
+                  progress >= 50 ? 'text-blue-600' :
+                  progress > 0 ? 'text-yellow-600' :
+                  'text-gray-400'
+                }`}>
+                  {progress}%
+                </span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-1.5">
+                <div
+                  className={`h-1.5 rounded-full transition-all duration-500 ${
+                    progress === 100 ? 'bg-green-500' :
+                    progress >= 50 ? 'bg-blue-500' :
+                    progress > 0 ? 'bg-yellow-500' :
+                    'bg-gray-300'
+                  }`}
+                  style={{ width: `${progress}%` }}
+                />
               </div>
             </div>
           </div>
@@ -1095,7 +1125,7 @@ function ClientForm() {
                     responses={responses}
                     onChange={handleChange}
                     disabled={false}
-                    defaultExpanded={index === 0}
+                    defaultExpanded={true}
                     dropboxLink={client.dropboxLink}
                     comments={comments}
                     onAddComment={handleAddComment}
@@ -1363,7 +1393,34 @@ function ReviewClientDetail() {
   const [isLoading, setIsLoading] = useState(true)
   const [lastSaved, setLastSaved] = useState(null)
   const [copyStatus, setCopyStatus] = useState('')
+  const [currentCommentIndex, setCurrentCommentIndex] = useState(0)
   const navigate = useNavigate()
+
+  // Get list of question IDs that have comments
+  const commentQuestionIds = useMemo(() => {
+    return Object.keys(comments).filter(qId => comments[qId]?.length > 0)
+  }, [comments])
+
+  // Scroll to a specific question
+  const scrollToQuestion = useCallback((questionId) => {
+    const element = document.getElementById(`question-${questionId}`)
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      // Highlight briefly
+      element.classList.add('bg-yellow-100')
+      setTimeout(() => element.classList.remove('bg-yellow-100'), 2000)
+    }
+  }, [])
+
+  // Navigate to next/prev comment
+  const goToComment = useCallback((direction) => {
+    if (commentQuestionIds.length === 0) return
+    let newIndex = currentCommentIndex + direction
+    if (newIndex < 0) newIndex = commentQuestionIds.length - 1
+    if (newIndex >= commentQuestionIds.length) newIndex = 0
+    setCurrentCommentIndex(newIndex)
+    scrollToQuestion(commentQuestionIds[newIndex])
+  }, [commentQuestionIds, currentCommentIndex, scrollToQuestion])
 
   useEffect(() => {
     if (!client) return
@@ -1537,26 +1594,30 @@ function ReviewClientDetail() {
           </div>
 
           {/* Comments Summary */}
-          {Object.keys(comments).length > 0 && (
+          {commentQuestionIds.length > 0 && (
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
               <div className="flex items-start gap-3">
                 <MessageCircle className="text-yellow-600 mt-0.5" size={20} />
                 <div className="flex-1">
                   <h3 className="font-semibold text-yellow-800">Comments & Questions</h3>
                   <p className="text-sm text-yellow-700 mb-2">
-                    There are comments on {Object.keys(comments).length} field(s). Look for the <MessageCircle size={14} className="inline" /> icons to view or resolve them.
+                    There are comments on {commentQuestionIds.length} field(s). Click a badge to jump to that question.
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    {Object.entries(comments).map(([questionId, cmts]) => (
-                      <span
+                    {commentQuestionIds.map((questionId, idx) => (
+                      <button
                         key={questionId}
-                        className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-yellow-200 text-yellow-800"
+                        onClick={() => {
+                          setCurrentCommentIndex(idx)
+                          scrollToQuestion(questionId)
+                        }}
+                        className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-yellow-200 text-yellow-800 hover:bg-yellow-300 transition-colors cursor-pointer"
                       >
                         {questionId}
                         <span className="w-4 h-4 bg-yellow-500 rounded-full text-white text-[10px] flex items-center justify-center">
-                          {cmts.length}
+                          {comments[questionId].length}
                         </span>
-                      </span>
+                      </button>
                     ))}
                   </div>
                 </div>
@@ -1621,7 +1682,7 @@ function ReviewClientDetail() {
                   responses={responses}
                   onChange={() => {}} // No-op for read-only
                   disabled={true}
-                  defaultExpanded={index === 0}
+                  defaultExpanded={true}
                   dropboxLink={client.dropboxLink}
                   comments={comments}
                   onAddComment={handleAddComment}
@@ -1629,6 +1690,35 @@ function ReviewClientDetail() {
                   role="attorney"
                 />
               ))}
+            </div>
+          )}
+
+          {/* Floating Comment Navigator */}
+          {commentQuestionIds.length > 0 && (
+            <div className="fixed bottom-6 right-6 bg-white rounded-lg shadow-lg border border-gray-200 p-3 z-20">
+              <div className="flex items-center gap-3">
+                <div className="text-sm text-gray-600">
+                  <span className="font-medium text-yellow-700">{currentCommentIndex + 1}</span>
+                  <span className="text-gray-400"> / {commentQuestionIds.length}</span>
+                  <span className="ml-1 text-gray-500">comments</span>
+                </div>
+                <div className="flex gap-1">
+                  <button
+                    onClick={() => goToComment(-1)}
+                    className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
+                    title="Previous comment"
+                  >
+                    <ChevronUp size={18} />
+                  </button>
+                  <button
+                    onClick={() => goToComment(1)}
+                    className="p-2 rounded-lg bg-yellow-100 hover:bg-yellow-200 transition-colors text-yellow-700"
+                    title="Next comment"
+                  >
+                    <ChevronDown size={18} />
+                  </button>
+                </div>
+              </div>
             </div>
           )}
         </main>

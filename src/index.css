@@ -46,4 +46,10 @@ body {
   .chip-active {
     @apply border-blue-500 bg-blue-500 text-white;
   }
+
+  .writing-vertical {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+  }
 }
