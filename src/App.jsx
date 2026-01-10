@@ -1183,7 +1183,7 @@ const CLIENTS = {
     ]
   },
   'alvarado-vasquez': {
-    clientName: 'Ashley Vasquez',
+    clientName: 'Ashley Vasquez (Guardian Ad Litem)',
     caseName: 'Alvarado v. State of California, et al.',
     caseNumber: '25STCV35294',
     decedent: 'Dominick Alvarado',
@@ -1193,11 +1193,262 @@ const CLIENTS = {
     dropboxLink: 'https://www.dropbox.com/request/9hnjYKu87tKg0a8T8FD8',
     sections: [
       {
-        id: 'basic-info',
-        title: 'A. Your Basic Information',
+        id: 'gal-info',
+        title: 'A. Guardian Ad Litem Information',
+        description: 'As the Guardian Ad Litem, please provide your own contact information first.',
         questions: [
-          { id: 'fullName', type: 'text', label: 'Full legal name' },
-          { id: 'dateOfBirth', type: 'date', label: 'Date of birth' }
+          { id: 'galFullName', type: 'text', label: 'Your full legal name' },
+          { id: 'galAddress', type: 'textarea', label: 'Your current address (street, city, state, zip)' },
+          { id: 'galPhone', type: 'text', label: 'Your phone number' },
+          { id: 'galEmail', type: 'text', label: 'Your email address' },
+          { id: 'galRelationship', type: 'text', label: 'Your relationship to Caleb', placeholder: 'e.g., grandmother, aunt, family friend' }
+        ]
+      },
+      {
+        id: 'child-caleb',
+        title: 'B. Caleb Aiden Alvarado - Basic Information',
+        description: 'Please provide the following information for Caleb Aiden Alvarado.',
+        questions: [
+          { id: 'caleb_fullName', type: 'text', label: 'Full legal name', placeholder: 'Caleb Aiden Alvarado' },
+          { id: 'caleb_dateOfBirth', type: 'date', label: 'Date of birth', rogRef: '2.2' },
+          { id: 'caleb_placeOfBirth', type: 'text', label: 'Place of birth (city, state, country)', rogRef: '2.2' },
+          { id: 'caleb_currentAddress', type: 'textarea', label: 'Current address (street, city, state, zip)', rogRef: '2.5(a)' },
+          { id: 'caleb_biologicalMother', type: 'text', label: 'Full name of Caleb\'s biological mother', rogRef: 'SI-1' },
+          { id: 'caleb_biologicalMotherAddress', type: 'textarea', label: 'Biological mother\'s address', rogRef: 'SI-1' },
+          { id: 'caleb_biologicalMotherPhone', type: 'text', label: 'Biological mother\'s phone number', rogRef: 'SI-1' },
+          { id: 'caleb_biologicalMotherEmail', type: 'text', label: 'Biological mother\'s email address', rogRef: 'SI-1' },
+          { id: 'caleb_isDominickBiologicalFather', type: 'yesno', label: 'Is Dominick Alvarado Caleb\'s biological father?', rogRef: 'SI-7' },
+          { id: 'caleb_biologicalFatherFacts', type: 'textarea', label: 'State all facts that support Caleb being Dominick\'s natural child', rogRef: 'SI-11' },
+          { id: 'caleb_hasBeenAdopted', type: 'yesno', label: 'Has Caleb ever been adopted?', rogRef: 'SI-10' },
+          { id: 'caleb_adoptionDetails', type: 'repeatable', label: 'Adoption details', showIf: 'caleb_hasBeenAdopted', rogRef: 'SI-10', fields: [
+            { id: 'name', type: 'text', label: 'Name of adopting person' },
+            { id: 'address', type: 'textarea', label: 'Address' },
+            { id: 'phone', type: 'text', label: 'Phone number' },
+            { id: 'email', type: 'text', label: 'Email address' },
+            { id: 'adoptionDate', type: 'date', label: 'Date of adoption' }
+          ]},
+          { id: 'caleb_parentalRightsTerminated', type: 'yesno', label: 'Were Dominick\'s parental rights over Caleb ever terminated or limited?', rogRef: 'SI-8' },
+          { id: 'caleb_parentalRightsDates', type: 'textarea', label: 'If yes, state the dates when those rights were terminated or limited', showIf: 'caleb_parentalRightsTerminated', rogRef: 'SI-8' },
+          { id: 'caleb_custodialRightsTerminated', type: 'yesno', label: 'Were Dominick\'s custodial rights over Caleb ever terminated or limited?', rogRef: 'SI-9' },
+          { id: 'caleb_custodialRightsDates', type: 'textarea', label: 'If yes, state the dates when those rights were terminated or limited', showIf: 'caleb_custodialRightsTerminated', rogRef: 'SI-9' },
+          { id: 'caleb_hasCourtProceedings', type: 'yesno', label: 'Have there been any court proceedings relating to Caleb (custody, dependency, etc.)?', rogRef: 'SI-17' },
+          { id: 'caleb_courtProceedings', type: 'repeatable', label: 'Court proceedings', showIf: 'caleb_hasCourtProceedings', rogRef: 'SI-17', fields: [
+            { id: 'venue', type: 'text', label: 'Court venue (county and state)' },
+            { id: 'caseNumber', type: 'text', label: 'Case number' },
+            { id: 'description', type: 'text', label: 'Description of proceeding' }
+          ]},
+          { id: 'caleb_hasAttendedSchool', type: 'yesno', label: 'Has Caleb attended any schools?', rogRef: 'SI-2' },
+          { id: 'caleb_schools', type: 'repeatable', label: 'Schools attended', showIf: 'caleb_hasAttendedSchool', rogRef: 'SI-2', fields: [
+            { id: 'name', type: 'text', label: 'School name' },
+            { id: 'address', type: 'textarea', label: 'Address' },
+            { id: 'phone', type: 'text', label: 'Phone number' },
+            { id: 'email', type: 'text', label: 'Email address' },
+            { id: 'datesAttended', type: 'text', label: 'Dates attended' }
+          ]}
+        ]
+      },
+      {
+        id: 'living-with-dominick',
+        title: 'C. Living with Dominick',
+        description: 'These questions ask about periods when Caleb lived with Dominick.',
+        questions: [
+          { id: 'calebLivedWithDominick', type: 'yesno', label: 'Did Caleb ever live with Dominick?', rogRef: 'SI-5' },
+          { id: 'livingPeriods', type: 'repeatable', label: 'Periods living with Dominick', showIf: 'calebLivedWithDominick', rogRef: 'SI-5,SI-6', fields: [
+            { id: 'address', type: 'textarea', label: 'Address where they lived together' },
+            { id: 'dateFrom', type: 'text', label: 'From date' },
+            { id: 'dateTo', type: 'text', label: 'To date' }
+          ]},
+          { id: 'othersLivedWith', type: 'repeatable', label: 'Other people who lived with Dominick and Caleb', showIf: 'calebLivedWithDominick', rogRef: 'SI-6', fields: [
+            { id: 'name', type: 'text', label: 'Name' },
+            { id: 'address', type: 'textarea', label: 'Current address (if known)' },
+            { id: 'phone', type: 'text', label: 'Phone number' },
+            { id: 'email', type: 'text', label: 'Email address' },
+            { id: 'relationship', type: 'text', label: 'Relationship to Dominick/Caleb' },
+            { id: 'dates', type: 'text', label: 'Dates they lived together' }
+          ]}
+        ]
+      },
+      {
+        id: 'relationship',
+        title: 'D. Caleb\'s Relationship with Dominick',
+        description: 'These questions ask about Caleb\'s relationship with his father Dominick.',
+        questions: [
+          { id: 'activitiesTogether', type: 'textarea', label: 'Describe the activities that Caleb and Dominick enjoyed doing together as father and son', rogRef: 'SI-12' },
+          { id: 'communicationFrequency', type: 'text', label: 'How frequently did Caleb see Dominick in the 5 years before his death?', rogRef: 'SI-13', placeholder: 'e.g., daily, weekly, monthly, rarely' },
+          { id: 'approximateVisits', type: 'text', label: 'Approximately how many times did Caleb see Dominick in the 5 years before his death?', rogRef: 'SI-13' },
+          { id: 'phoneCallFrequency', type: 'text', label: 'How many times did Caleb speak to Dominick on the phone in the 5 years before his death?', rogRef: 'SI-14' },
+          { id: 'writtenCommunication', type: 'text', label: 'How many times did Caleb and Dominick communicate in writing (text, email, cards, letters) in the 5 years before his death?', rogRef: 'SI-15' },
+          { id: 'communicationMethods', type: 'multiselect', label: 'How did Caleb communicate with Dominick? (Select all that apply)', options: ['Phone calls', 'Text messages', 'In person', 'Video calls', 'Social media', 'Cards/Letters'] },
+          { id: 'relationshipDescription', type: 'textarea', label: 'Describe the bond and relationship Caleb had with Dominick. What made their relationship special?' },
+          { id: 'majorLifeEvents', type: 'yesno', label: 'Did Dominick participate in major life events with Caleb (birthdays, holidays, school events, etc.)?' },
+          { id: 'majorLifeEventsList', type: 'repeatable', label: 'Major life events with Dominick', showIf: 'majorLifeEvents', fields: [
+            { id: 'event', type: 'text', label: 'Event type (birthday, holiday, school event, etc.)' },
+            { id: 'date', type: 'text', label: 'Approximate date' },
+            { id: 'description', type: 'text', label: 'Description of Dominick\'s participation' }
+          ]},
+          { id: 'hadVacations', type: 'yesno', label: 'Did Caleb take any vacations or trips with Dominick?' },
+          { id: 'vacationDetails', type: 'repeatable', label: 'Vacations/trips with Dominick', showIf: 'hadVacations', fields: [
+            { id: 'location', type: 'text', label: 'Location' },
+            { id: 'dates', type: 'text', label: 'Dates' }
+          ]}
+        ]
+      },
+      {
+        id: 'financial-support',
+        title: 'E. Financial Support from Dominick',
+        description: 'These questions ask about financial support Dominick provided to Caleb.',
+        questions: [
+          { id: 'receivedAnySupport', type: 'yesno', label: 'Did Dominick ever provide Caleb with financial support, purchase items for him, or provide any services?' },
+          { id: 'receivedMoney', type: 'yesno', label: 'Did Dominick provide Caleb with money in the 10 years before his death?', showIf: 'receivedAnySupport', rogRef: 'SI-3' },
+          { id: 'moneyProvided', type: 'repeatable', label: 'Money provided by Dominick', showIf: 'receivedMoney', rogRef: 'SI-3', fields: [
+            { id: 'year', type: 'text', label: 'Year' },
+            { id: 'amount', type: 'text', label: 'Amount provided' },
+            { id: 'purpose', type: 'text', label: 'What was it for?' },
+            { id: 'howProvided', type: 'text', label: 'How was it provided? (cash, check, Venmo, etc.)' }
+          ]},
+          { id: 'receivedPurchases', type: 'yesno', label: 'Did Dominick purchase anything for Caleb in the 10 years before his death?', showIf: 'receivedAnySupport', rogRef: 'SI-4' },
+          { id: 'purchaseDetails', type: 'repeatable', label: 'Items purchased by Dominick', showIf: 'receivedPurchases', rogRef: 'SI-4', fields: [
+            { id: 'item', type: 'text', label: 'Item description' },
+            { id: 'cost', type: 'text', label: 'Approximate cost' },
+            { id: 'date', type: 'text', label: 'Approximate date of purchase' }
+          ]},
+          { id: 'providedMedicalInsurance', type: 'yesno', label: 'Did Dominick purchase medical insurance for Caleb?', showIf: 'receivedAnySupport' },
+          { id: 'medicalInsuranceDetails', type: 'textarea', label: 'Describe the medical insurance coverage Dominick provided', showIf: 'providedMedicalInsurance' },
+          { id: 'hadLifeInsurance', type: 'yesno', label: 'Did Dominick have life insurance with Caleb as a beneficiary?' },
+          { id: 'lifeInsuranceDetails', type: 'repeatable', label: 'Life insurance policies', showIf: 'hadLifeInsurance', fields: [
+            { id: 'company', type: 'text', label: 'Insurance company' },
+            { id: 'policyNumber', type: 'text', label: 'Policy number (if known)' },
+            { id: 'amount', type: 'text', label: 'Coverage amount (if known)' }
+          ]}
+        ]
+      },
+      {
+        id: 'healthcare-treatment',
+        title: 'F. Healthcare Treatment Due to Dominick\'s Death',
+        description: 'These questions ask about any medical or mental health treatment Caleb has received as a result of Dominick\'s death.',
+        questions: [
+          { id: 'calebReceivedTreatment', type: 'yesno', label: 'Has Caleb received medical or mental health treatment due to Dominick\'s death?', rogRef: 'SI-16' },
+          { id: 'treatmentProviders', type: 'repeatable', label: 'Healthcare providers who treated Caleb', showIf: 'calebReceivedTreatment', rogRef: 'SI-16', fields: [
+            { id: 'providerName', type: 'text', label: 'Provider/facility name' },
+            { id: 'address', type: 'textarea', label: 'Address' },
+            { id: 'phone', type: 'text', label: 'Phone number' },
+            { id: 'email', type: 'text', label: 'Email address' },
+            { id: 'treatmentType', type: 'text', label: 'Type of treatment (counseling, therapy, medical, etc.)' },
+            { id: 'dates', type: 'text', label: 'Dates of treatment' }
+          ]},
+          { id: 'calebHasComplaints', type: 'yesno', label: 'Does Caleb have ongoing complaints (emotional, behavioral, physical) that you attribute to Dominick\'s death?' },
+          { id: 'ongoingComplaints', type: 'repeatable', label: 'Ongoing complaints', showIf: 'calebHasComplaints', fields: [
+            { id: 'description', type: 'textarea', label: 'Description of complaint' },
+            { id: 'status', type: 'text', label: 'Is it improving, staying the same, or worsening?' }
+          ]}
+        ]
+      },
+      {
+        id: 'damages',
+        title: 'G. Losses & Damages',
+        description: 'Please describe how Dominick\'s death has affected Caleb.',
+        questions: [
+          { id: 'lossOfLoveDescription', type: 'textarea', label: 'Describe the loss of love, companionship, comfort, care, assistance, protection, affection, society, and moral support Caleb has experienced since Dominick\'s death' },
+          { id: 'howLifeChanged', type: 'textarea', label: 'How has Caleb\'s daily life changed since Dominick\'s death?' },
+          { id: 'emotionalImpact', type: 'textarea', label: 'Describe the emotional and psychological impact of Dominick\'s death on Caleb' },
+          { id: 'futureLosses', type: 'textarea', label: 'Describe any future losses Caleb will experience (e.g., Dominick not being present for graduations, birthdays, other milestones)' },
+          { id: 'economicDamages', type: 'textarea', label: 'Describe any economic damages Caleb has suffered or will suffer due to Dominick\'s death' },
+          { id: 'nonEconomicDamages', type: 'textarea', label: 'Describe any non-economic damages Caleb has suffered (pain, suffering, emotional distress, etc.)' }
+        ]
+      },
+      {
+        id: 'incident-questions',
+        title: 'H. Questions About Contributing to the Incident',
+        description: 'These are standard legal questions asking whether Caleb played any role in causing Dominick\'s death. As a minor child, he almost certainly did not - so you will likely answer "No" to all of these.',
+        questions: [
+          { id: 'wasActingAsAgent', type: 'yesno', label: 'At the time of Dominick\'s death, was Caleb acting as an agent or employee for any person in a way that contributed to causing the incident?', rogRef: '2.11' },
+          { id: 'hadDisability', type: 'yesno', label: 'Did Caleb have any physical, emotional, or mental disability or condition that contributed to CAUSING Dominick\'s death?', rogRef: '2.12' },
+          { id: 'usedSubstances', type: 'yesno', label: 'Within 24 hours before Dominick\'s death, did Caleb use any substance (alcohol, drugs, medication) that contributed to CAUSING the incident?', rogRef: '2.13' }
+        ]
+      },
+      {
+        id: 'investigation',
+        title: 'I. Investigation & Evidence',
+        description: 'These questions ask about witnesses, photographs, and other evidence.',
+        questions: [
+          { id: 'hasAnyInvestigationInfo', type: 'yesno', label: 'Do you have any knowledge of witnesses, evidence, photographs, or other materials relevant to Caleb\'s relationship with Dominick?' },
+          { id: 'hasPhotosVideos', type: 'yesno', label: 'Do you have any photographs or videos of Dominick with Caleb?', showIf: 'hasAnyInvestigationInfo' },
+          { id: 'photosVideosDescription', type: 'textarea', label: 'Describe the photographs/videos you have (approximate number, when taken, what they show)', showIf: 'hasPhotosVideos' },
+          { id: 'hasWrittenCommunications', type: 'yesno', label: 'Do you have any cards, letters, text messages, or other written communications from Dominick to Caleb?', showIf: 'hasAnyInvestigationInfo' },
+          { id: 'writtenCommunicationsDescription', type: 'textarea', label: 'Describe the written communications you have', showIf: 'hasWrittenCommunications' },
+          { id: 'hasCharacterWitnesses', type: 'yesno', label: 'Are there other people who could speak about Dominick\'s character, personality, or his relationship with Caleb?', showIf: 'hasAnyInvestigationInfo' },
+          { id: 'characterWitnesses', type: 'repeatable', label: 'Character/relationship witnesses', showIf: 'hasCharacterWitnesses', fields: [
+            { id: 'name', type: 'text', label: 'Name' },
+            { id: 'address', type: 'text', label: 'Address' },
+            { id: 'phone', type: 'text', label: 'Phone number' },
+            { id: 'relationship', type: 'text', label: 'Relationship to Dominick/Caleb' },
+            { id: 'whatTheyKnow', type: 'textarea', label: 'What can they speak to?' }
+          ]}
+        ]
+      },
+      {
+        id: 'documents-checklist',
+        title: 'J. Documents Checklist',
+        description: 'Please check all documents you have access to and can provide for Caleb. This helps us know what evidence we can use to support the case.',
+        questions: [
+          { id: 'docs_identity', type: 'checklist', label: 'Identity & Relationship Documents', options: [
+            { id: 'birthCertificate', label: 'Caleb\'s birth certificate (showing Dominick as father)' },
+            { id: 'socialSecurityCard', label: 'Caleb\'s Social Security card' }
+          ]},
+          { id: 'docs_residency', type: 'checklist', label: 'Residency Documents', options: [
+            { id: 'residencyDocs', label: 'Documents showing Caleb\'s residence addresses (2013-2023)' },
+            { id: 'residencyWithDominick', label: 'Documents showing residences where Caleb lived with Dominick' }
+          ]},
+          { id: 'docs_school', type: 'checklist', label: 'School Records', options: [
+            { id: 'schoolRecords', label: 'School enrollment records' },
+            { id: 'attendanceRecords', label: 'School attendance records' }
+          ]},
+          { id: 'docs_financial', type: 'checklist', label: 'Financial Documents', options: [
+            { id: 'financialSupport', label: 'Documents showing financial support from Dominick (2013-2023)' },
+            { id: 'purchaseReceipts', label: 'Receipts for items Dominick purchased for Caleb' },
+            { id: 'medicalInsurance', label: 'Documents showing medical insurance from Dominick' },
+            { id: 'lifeInsurance', label: 'Life insurance policies naming Caleb as beneficiary' }
+          ]},
+          { id: 'docs_medical', type: 'checklist', label: 'Medical Documents', options: [
+            { id: 'medicalTreatment', label: 'Medical treatment records related to Dominick\'s death' },
+            { id: 'mentalHealthTreatment', label: 'Mental health/counseling records related to Dominick\'s death' }
+          ]},
+          { id: 'docs_relationship', type: 'checklist', label: 'Relationship Evidence', options: [
+            { id: 'photos', label: 'Photographs of Caleb with Dominick' },
+            { id: 'cardsLetters', label: 'Cards, letters, or notes from Dominick to Caleb' },
+            { id: 'textMessages', label: 'Text messages or social media communications' },
+            { id: 'videos', label: 'Videos of Caleb with Dominick' },
+            { id: 'socialEventDocs', label: 'Documents/photos from social events with Dominick (2013-2023)' },
+            { id: 'vacationDocs', label: 'Documents/photos from vacations with Dominick (2013-2023)' }
+          ]},
+          { id: 'docs_court', type: 'checklist', label: 'Court & Legal Documents', options: [
+            { id: 'juvenileDependency', label: 'Juvenile Dependency proceeding documents' },
+            { id: 'custodyOrders', label: 'Custody orders or agreements' },
+            { id: 'otherCourtDocs', label: 'Other court documents relating to Caleb' }
+          ]},
+          { id: 'docs_claims', type: 'checklist', label: 'Documents Supporting Legal Claims', options: [
+            { id: 'batteryDocs', label: 'Documents supporting battery claim' },
+            { id: 'negligenceDocs', label: 'Documents supporting negligence claim' },
+            { id: 'falseImprisonmentDocs', label: 'Documents supporting false imprisonment claim' },
+            { id: 'civilCodeDocs', label: 'Documents supporting Civil Code section 52.1 claim' },
+            { id: 'punitiveDamagesDocs', label: 'Documents supporting punitive damages claim' },
+            { id: 'trialDocs', label: 'Documents you intend to rely on at trial' }
+          ]}
+        ]
+      },
+      {
+        id: 'final-questions',
+        title: 'K. Final Questions',
+        questions: [
+          { id: 'responsePrepHelpers', type: 'repeatable', label: 'Who helped you prepare these responses? (List each person who prepared or assisted)', rogRef: '1.1', fields: [
+            { id: 'name', type: 'text', label: 'Name' },
+            { id: 'address', type: 'text', label: 'Address' },
+            { id: 'phone', type: 'text', label: 'Phone number' },
+            { id: 'relationship', type: 'text', label: 'Relationship to you/Caleb' }
+          ]},
+          { id: 'anythingElse', type: 'textarea', label: 'Is there anything else you think is relevant to Caleb\'s case that we haven\'t asked about?' },
+          { id: 'unableToLocate', type: 'textarea', label: 'Are there any documents you are unable to locate? If so, which ones and why?' },
+          { id: 'additionalNotes', type: 'textarea', label: 'Any additional notes or messages for your attorney' }
         ]
       }
     ]
