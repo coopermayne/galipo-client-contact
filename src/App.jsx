@@ -185,19 +185,23 @@ const CLIENTS = {
         id: 'your-background',
         title: 'B. Your Employment & Education',
         questions: [
-          { id: 'currentEmployer', type: 'textarea', label: 'Current employer or self-employment (name, address, phone number)', rogRef: '2.6(a)' },
-          { id: 'employmentHistory', type: 'repeatable', label: 'Employment history (past 5 years before July 2023 to present)', rogRef: '2.6(b)', fields: [
+          { id: 'isCurrentlyEmployed', type: 'yesno', label: 'Are you currently employed or self-employed?', rogRef: '2.6(a)' },
+          { id: 'currentEmployer', type: 'textarea', label: 'Current employer or self-employment (name, address, phone number)', showIf: 'isCurrentlyEmployed', rogRef: '2.6(a)' },
+          { id: 'hasEmploymentHistory', type: 'yesno', label: 'Have you had any other employers in the past 5 years (before July 2023)?', rogRef: '2.6(b)' },
+          { id: 'employmentHistory', type: 'repeatable', label: 'Employment history', showIf: 'hasEmploymentHistory', rogRef: '2.6(b)', fields: [
             { id: 'employer', type: 'text', label: 'Employer name' },
             { id: 'address', type: 'text', label: 'Address' },
             { id: 'dates', type: 'text', label: 'Dates of employment (from - to)' },
             { id: 'jobTitle', type: 'text', label: 'Job title' },
             { id: 'duties', type: 'text', label: 'Nature of work/duties' }
           ]},
-          { id: 'educationHistory', type: 'repeatable', label: 'Education (high school and beyond)', rogRef: '2.7(a-d)', fields: [
+          { id: 'hasEducationBeyondHighSchool', type: 'yesno', label: 'Did you attend any school or training beyond high school?', rogRef: '2.7' },
+          { id: 'highSchoolInfo', type: 'text', label: 'High school name and highest grade completed', rogRef: '2.7(a-d)' },
+          { id: 'educationHistory', type: 'repeatable', label: 'Education beyond high school', showIf: 'hasEducationBeyondHighSchool', rogRef: '2.7(a-d)', fields: [
             { id: 'schoolName', type: 'text', label: 'School/institution name' },
             { id: 'address', type: 'text', label: 'Address' },
             { id: 'datesAttended', type: 'text', label: 'Dates attended' },
-            { id: 'highestGrade', type: 'text', label: 'Highest grade completed or degree received' }
+            { id: 'highestGrade', type: 'text', label: 'Degree or certification received' }
           ]}
         ]
       },
@@ -259,19 +263,20 @@ const CLIENTS = {
         id: 'financial-support',
         title: 'E. Financial Support from Dominick',
         questions: [
-          { id: 'receivedFinancialSupport', type: 'yesno', label: 'Did Dominick provide you with financial support?' },
+          { id: 'receivedAnySupport', type: 'yesno', label: 'Did Dominick ever provide you with any financial support, purchase items for you, or provide household services?' },
+          { id: 'receivedFinancialSupport', type: 'yesno', label: 'Did Dominick provide you with direct financial support (cash, payments)?', showIf: 'receivedAnySupport' },
           { id: 'financialSupportDetails', type: 'repeatable', label: 'Financial support received', showIf: 'receivedFinancialSupport', fields: [
             { id: 'dates', type: 'text', label: 'Time period (from - to)' },
             { id: 'monthlyAmount', type: 'text', label: 'Approximate monthly amount' },
             { id: 'howProvided', type: 'text', label: 'How was it provided? (cash, check, Venmo, etc.)' }
           ]},
-          { id: 'receivedPurchases', type: 'yesno', label: 'Did Dominick purchase anything for you?' },
+          { id: 'receivedPurchases', type: 'yesno', label: 'Did Dominick purchase anything for you?', showIf: 'receivedAnySupport' },
           { id: 'purchaseDetails', type: 'repeatable', label: 'Items purchased by Dominick', showIf: 'receivedPurchases', fields: [
             { id: 'item', type: 'text', label: 'Item description' },
             { id: 'cost', type: 'text', label: 'Approximate cost' },
             { id: 'date', type: 'text', label: 'Approximate date' }
           ]},
-          { id: 'receivedServices', type: 'yesno', label: 'Did Dominick provide household services for you (repairs, maintenance, etc.)?' },
+          { id: 'receivedServices', type: 'yesno', label: 'Did Dominick provide household services for you (repairs, maintenance, etc.)?', showIf: 'receivedAnySupport' },
           { id: 'servicesDetails', type: 'repeatable', label: 'Services provided by Dominick', showIf: 'receivedServices', fields: [
             { id: 'serviceType', type: 'text', label: 'Type of service' },
             { id: 'description', type: 'text', label: 'Description' },
@@ -283,18 +288,19 @@ const CLIENTS = {
         id: 'shared-experiences',
         title: 'F. Relationship & Shared Experiences',
         questions: [
-          { id: 'majorLifeEvents', type: 'yesno', label: 'Did Dominick participate in major life events with you (birthdays, holidays, graduations, etc.)?' },
+          { id: 'hadSharedExperiences', type: 'yesno', label: 'Did you and Dominick spend time together at events, social gatherings, or vacations?' },
+          { id: 'majorLifeEvents', type: 'yesno', label: 'Did Dominick participate in major life events with you (birthdays, holidays, graduations, etc.)?', showIf: 'hadSharedExperiences' },
           { id: 'majorLifeEventsList', type: 'repeatable', label: 'Major life events with Dominick', showIf: 'majorLifeEvents', fields: [
             { id: 'event', type: 'text', label: 'Event type (birthday, holiday, graduation, etc.)' },
             { id: 'date', type: 'text', label: 'Approximate date' },
             { id: 'description', type: 'text', label: 'Description of Dominick\'s participation' }
           ]},
-          { id: 'hadSocialEvents', type: 'yesno', label: 'Did you attend social events together (2013-2023)?' },
+          { id: 'hadSocialEvents', type: 'yesno', label: 'Did you attend other social events together (2013-2023)?', showIf: 'hadSharedExperiences' },
           { id: 'socialEvents', type: 'repeatable', label: 'Social events attended together', showIf: 'hadSocialEvents', fields: [
             { id: 'event', type: 'text', label: 'Event description' },
             { id: 'date', type: 'text', label: 'Approximate date' }
           ]},
-          { id: 'hadVacations', type: 'yesno', label: 'Did you take any vacations or trips with Dominick?' },
+          { id: 'hadVacations', type: 'yesno', label: 'Did you take any vacations or trips with Dominick?', showIf: 'hadSharedExperiences' },
           { id: 'vacationDetails', type: 'repeatable', label: 'Vacations/trips with Dominick', showIf: 'hadVacations', fields: [
             { id: 'location', type: 'text', label: 'Location' },
             { id: 'dates', type: 'text', label: 'Dates' }
@@ -330,26 +336,27 @@ const CLIENTS = {
         id: 'health-history',
         title: 'H. Dominick\'s Health & Medical History',
         questions: [
-          { id: 'knowsHealthcareProviders', type: 'yesno', label: 'Do you know of any healthcare providers who treated Dominick?' },
+          { id: 'knowsAboutDominickHealth', type: 'yesno', label: 'Do you have any knowledge about Dominick\'s healthcare, medical conditions, medications, mental health treatment, or incarceration history?' },
+          { id: 'knowsHealthcareProviders', type: 'yesno', label: 'Do you know of any healthcare providers who treated Dominick?', showIf: 'knowsAboutDominickHealth' },
           { id: 'healthcareProviders', type: 'repeatable', label: 'Healthcare providers', showIf: 'knowsHealthcareProviders', fields: [
             { id: 'name', type: 'text', label: 'Provider/facility name' },
             { id: 'address', type: 'text', label: 'Address' },
             { id: 'phone', type: 'text', label: 'Phone number' },
             { id: 'treatment', type: 'text', label: 'Type of treatment' }
           ]},
-          { id: 'hadConditionAtIncident', type: 'yesno', label: 'Was Dominick diagnosed with any medical conditions?' },
+          { id: 'hadConditionAtIncident', type: 'yesno', label: 'Was Dominick diagnosed with any medical conditions?', showIf: 'knowsAboutDominickHealth' },
           { id: 'conditionsList', type: 'repeatable', label: 'Medical conditions', showIf: 'hadConditionAtIncident', fields: [
             { id: 'condition', type: 'text', label: 'Condition name' },
             { id: 'datesDiagnosed', type: 'text', label: 'When diagnosed' },
             { id: 'treatment', type: 'text', label: 'Treatment received' }
           ]},
-          { id: 'hadPrescriptions', type: 'yesno', label: 'Was Dominick taking any prescription medications?' },
+          { id: 'hadPrescriptions', type: 'yesno', label: 'Was Dominick taking any prescription medications?', showIf: 'knowsAboutDominickHealth' },
           { id: 'prescriptionDetails', type: 'repeatable', label: 'Prescription medications', showIf: 'hadPrescriptions', fields: [
             { id: 'name', type: 'text', label: 'Medication name' },
             { id: 'dosage', type: 'text', label: 'Dosage' },
             { id: 'doctor', type: 'text', label: 'Prescribing doctor' }
           ]},
-          { id: 'hadMentalHealthTreatment', type: 'yesno', label: 'Was Dominick ever a patient at a mental health facility or received mental health treatment?' },
+          { id: 'hadMentalHealthTreatment', type: 'yesno', label: 'Was Dominick ever a patient at a mental health facility or received mental health treatment?', showIf: 'knowsAboutDominickHealth' },
           { id: 'mentalHealthHistory', type: 'repeatable', label: 'Mental health treatment', showIf: 'hadMentalHealthTreatment', fields: [
             { id: 'facility', type: 'text', label: 'Facility/provider name' },
             { id: 'location', type: 'text', label: 'Location' },
@@ -357,7 +364,7 @@ const CLIENTS = {
             { id: 'reason', type: 'text', label: 'Reason for treatment' },
             { id: 'description', type: 'textarea', label: 'Description of treatment' }
           ]},
-          { id: 'wasIncarcerated', type: 'yesno', label: 'Was Dominick ever incarcerated?' },
+          { id: 'wasIncarcerated', type: 'yesno', label: 'Was Dominick ever incarcerated?', showIf: 'knowsAboutDominickHealth' },
           { id: 'incarcerationHistory', type: 'repeatable', label: 'Incarceration history', showIf: 'wasIncarcerated', fields: [
             { id: 'facility', type: 'text', label: 'Facility name' },
             { id: 'location', type: 'text', label: 'Location' },
@@ -479,15 +486,16 @@ const CLIENTS = {
         title: 'K. Your Medical History',
         description: 'These questions ask about your medical history before and after Dominick\'s death.',
         questions: [
-          { id: 'hadPriorComplaints', type: 'yesno', label: 'Before Dominick\'s death, did you have complaints or injuries involving the same part of your body or mental/emotional state now claimed as injured?', rogRef: '10.1' },
+          { id: 'hasRelevantMedicalHistory', type: 'yesno', label: 'Do you have any relevant medical history - prior complaints, disabilities, or injuries sustained after Dominick\'s death - that might relate to your current claims?', rogRef: '10.1-10.3' },
+          { id: 'hadPriorComplaints', type: 'yesno', label: 'Before Dominick\'s death, did you have complaints or injuries involving the same part of your body or mental/emotional state now claimed as injured?', showIf: 'hasRelevantMedicalHistory', rogRef: '10.1' },
           { id: 'priorComplaints', type: 'repeatable', label: 'Prior complaints or injuries', showIf: 'hadPriorComplaints', rogRef: '10.1(a-c)', fields: [
             { id: 'description', type: 'textarea', label: 'Description of complaint or injury' },
             { id: 'dates', type: 'text', label: 'Dates it began and ended' },
             { id: 'provider', type: 'textarea', label: 'Healthcare provider name, address, phone' }
           ]},
-          { id: 'hadPriorDisabilities', type: 'yesno', label: 'Did you have any physical, mental, or emotional disabilities immediately before Dominick\'s death?', rogRef: '10.2' },
+          { id: 'hadPriorDisabilities', type: 'yesno', label: 'Did you have any physical, mental, or emotional disabilities immediately before Dominick\'s death?', showIf: 'hasRelevantMedicalHistory', rogRef: '10.2' },
           { id: 'priorDisabilities', type: 'textarea', label: 'List all disabilities you had before the incident', showIf: 'hadPriorDisabilities', rogRef: '10.2' },
-          { id: 'hadSubsequentInjuries', type: 'yesno', label: 'After Dominick\'s death, have you sustained injuries of the kind for which you are now claiming damages (from other incidents)?', rogRef: '10.3' },
+          { id: 'hadSubsequentInjuries', type: 'yesno', label: 'After Dominick\'s death, have you sustained injuries of the kind for which you are now claiming damages (from other incidents)?', showIf: 'hasRelevantMedicalHistory', rogRef: '10.3' },
           { id: 'subsequentInjuries', type: 'repeatable', label: 'Subsequent injuries', showIf: 'hadSubsequentInjuries', rogRef: '10.3(a-e)', fields: [
             { id: 'datePlace', type: 'text', label: 'Date and place it occurred' },
             { id: 'otherPerson', type: 'text', label: 'Name, address, phone of any other person involved' },
@@ -544,16 +552,17 @@ const CLIENTS = {
         id: 'insurance',
         title: 'N. Insurance',
         questions: [
-          { id: 'hadInsuranceCoverage', type: 'yesno', label: 'At the time of Dominick\'s death, did you have any insurance that might cover damages from this incident (liability, medical expense, etc.)?', rogRef: '4.1' },
+          { id: 'hasAnyInsuranceInfo', type: 'yesno', label: 'Do you have any insurance-related information relevant to this case (your insurance, self-insurance, or life insurance on Dominick)?', rogRef: '4.1-4.2' },
+          { id: 'hadInsuranceCoverage', type: 'yesno', label: 'At the time of Dominick\'s death, did you have any insurance that might cover damages from this incident (liability, medical expense, etc.)?', showIf: 'hasAnyInsuranceInfo', rogRef: '4.1' },
           { id: 'insuranceCoverageList', type: 'repeatable', label: 'Insurance coverage', showIf: 'hadInsuranceCoverage', rogRef: '4.1', fields: [
             { id: 'coverageType', type: 'text', label: 'Type of coverage (liability, medical, etc.)' },
             { id: 'company', type: 'text', label: 'Insurance company' },
             { id: 'policyNumber', type: 'text', label: 'Policy number' },
             { id: 'coverageLimits', type: 'text', label: 'Coverage limits' }
           ]},
-          { id: 'isSelfInsured', type: 'yesno', label: 'Are you self-insured under any statute for damages from this incident?', rogRef: '4.2' },
+          { id: 'isSelfInsured', type: 'yesno', label: 'Are you self-insured under any statute for damages from this incident?', showIf: 'hasAnyInsuranceInfo', rogRef: '4.2' },
           { id: 'selfInsuredStatute', type: 'text', label: 'Specify the statute', showIf: 'isSelfInsured', rogRef: '4.2' },
-          { id: 'wasLifeInsuranceBeneficiary', type: 'yesno', label: 'Was Dominick\'s life insured with you as a beneficiary?' },
+          { id: 'wasLifeInsuranceBeneficiary', type: 'yesno', label: 'Was Dominick\'s life insured with you as a beneficiary?', showIf: 'hasAnyInsuranceInfo' },
           { id: 'lifeInsuranceList', type: 'repeatable', label: 'Life insurance policies', showIf: 'wasLifeInsuranceBeneficiary', fields: [
             { id: 'company', type: 'text', label: 'Insurance company' },
             { id: 'policyNumber', type: 'text', label: 'Policy number' },
@@ -567,21 +576,22 @@ const CLIENTS = {
         title: 'O. Investigation & Evidence',
         description: 'These questions ask about witnesses, statements, photographs, and other evidence related to Dominick\'s death.',
         questions: [
-          { id: 'knowsWitnesses', type: 'yesno', label: 'Do you know of any individuals who witnessed the incident or events immediately before or after, or who have knowledge of the incident?', rogRef: '12.1' },
+          { id: 'hasAnyInvestigationInfo', type: 'yesno', label: 'Do you have any knowledge of witnesses, evidence, photographs, reports, or investigations related to this incident?', rogRef: '12.1-12.7' },
+          { id: 'knowsWitnesses', type: 'yesno', label: 'Do you know of any individuals who witnessed the incident or events immediately before or after, or who have knowledge of the incident?', showIf: 'hasAnyInvestigationInfo', rogRef: '12.1' },
           { id: 'witnesses', type: 'repeatable', label: 'Witnesses', showIf: 'knowsWitnesses', rogRef: '12.1(a-d)', fields: [
             { id: 'name', type: 'text', label: 'Name' },
             { id: 'address', type: 'text', label: 'Address' },
             { id: 'phone', type: 'text', label: 'Phone number' },
             { id: 'whatTheyKnow', type: 'textarea', label: 'What they witnessed or know' }
           ]},
-          { id: 'conductedInterviews', type: 'yesno', label: 'Have you or anyone on your behalf interviewed any individual concerning the incident?', rogRef: '12.2' },
+          { id: 'conductedInterviews', type: 'yesno', label: 'Have you or anyone on your behalf interviewed any individual concerning the incident?', showIf: 'hasAnyInvestigationInfo', rogRef: '12.2' },
           { id: 'interviews', type: 'repeatable', label: 'Interviews conducted', showIf: 'conductedInterviews', rogRef: '12.2(a-c)', fields: [
             { id: 'intervieweeName', type: 'text', label: 'Name of person interviewed' },
             { id: 'intervieweeAddress', type: 'text', label: 'Address and phone' },
             { id: 'date', type: 'text', label: 'Date of interview' },
             { id: 'interviewer', type: 'text', label: 'Name, address, phone of person who conducted interview' }
           ]},
-          { id: 'obtainedStatements', type: 'yesno', label: 'Have you or anyone on your behalf obtained a written or recorded statement from any individual concerning the incident?', rogRef: '12.3' },
+          { id: 'obtainedStatements', type: 'yesno', label: 'Have you or anyone on your behalf obtained a written or recorded statement from any individual concerning the incident?', showIf: 'hasAnyInvestigationInfo', rogRef: '12.3' },
           { id: 'statements', type: 'repeatable', label: 'Statements obtained', showIf: 'obtainedStatements', rogRef: '12.3(a-d)', fields: [
             { id: 'personName', type: 'text', label: 'Name of person who gave statement' },
             { id: 'personAddress', type: 'text', label: 'Address and phone' },
@@ -589,7 +599,7 @@ const CLIENTS = {
             { id: 'date', type: 'text', label: 'Date obtained' },
             { id: 'whoHas', type: 'text', label: 'Who has the original or a copy (name, address, phone)' }
           ]},
-          { id: 'hasPhotosVideos', type: 'yesno', label: 'Do you know of any photographs, films, or videotapes depicting any place, object, or individual concerning the incident or injuries?', rogRef: '12.4' },
+          { id: 'hasPhotosVideos', type: 'yesno', label: 'Do you know of any photographs, films, or videotapes depicting any place, object, or individual concerning the incident or injuries?', showIf: 'hasAnyInvestigationInfo', rogRef: '12.4' },
           { id: 'photosVideos', type: 'repeatable', label: 'Photographs/films/videotapes', showIf: 'hasPhotosVideos', rogRef: '12.4(a-e)', fields: [
             { id: 'quantity', type: 'text', label: 'Number of photos or length of film/video' },
             { id: 'subjects', type: 'textarea', label: 'What/who is depicted' },
@@ -597,26 +607,26 @@ const CLIENTS = {
             { id: 'takenBy', type: 'text', label: 'Name, address, phone of person who took them' },
             { id: 'whoHas', type: 'text', label: 'Who has originals or copies (name, address, phone)' }
           ]},
-          { id: 'hasDiagrams', type: 'yesno', label: 'Do you know of any diagram, reproduction, or model of any place or thing concerning the incident?', rogRef: '12.5' },
+          { id: 'hasDiagrams', type: 'yesno', label: 'Do you know of any diagram, reproduction, or model of any place or thing concerning the incident?', showIf: 'hasAnyInvestigationInfo', rogRef: '12.5' },
           { id: 'diagrams', type: 'repeatable', label: 'Diagrams/reproductions/models', showIf: 'hasDiagrams', rogRef: '12.5(a-c)', fields: [
             { id: 'type', type: 'text', label: 'Type (diagram, reproduction, model)' },
             { id: 'subject', type: 'text', label: 'Subject matter' },
             { id: 'whoHas', type: 'text', label: 'Name, address, phone of person who has it' }
           ]},
-          { id: 'hasReports', type: 'yesno', label: 'Was a report made by any person concerning the incident?', rogRef: '12.6' },
+          { id: 'hasReports', type: 'yesno', label: 'Was a report made by any person concerning the incident?', showIf: 'hasAnyInvestigationInfo', rogRef: '12.6' },
           { id: 'reports', type: 'repeatable', label: 'Reports made', showIf: 'hasReports', rogRef: '12.6(a-d)', fields: [
             { id: 'reporterName', type: 'text', label: 'Name, title, ID number, employer of person who made report' },
             { id: 'dateType', type: 'text', label: 'Date and type of report' },
             { id: 'madeFor', type: 'text', label: 'Name, address, phone of person for whom report was made' },
             { id: 'whoHas', type: 'text', label: 'Who has original or copy (name, address, phone)' }
           ]},
-          { id: 'inspectedScene', type: 'yesno', label: 'Have you or anyone on your behalf inspected the scene of the incident?', rogRef: '12.7' },
+          { id: 'inspectedScene', type: 'yesno', label: 'Have you or anyone on your behalf inspected the scene of the incident?', showIf: 'hasAnyInvestigationInfo', rogRef: '12.7' },
           { id: 'sceneInspections', type: 'repeatable', label: 'Scene inspections', showIf: 'inspectedScene', rogRef: '12.7(a-b)', fields: [
             { id: 'inspectorName', type: 'text', label: 'Name of person who inspected' },
             { id: 'inspectorAddress', type: 'text', label: 'Address and phone' },
             { id: 'date', type: 'text', label: 'Date of inspection' }
           ]},
-          { id: 'conductedSurveillance', type: 'yesno', label: 'Have you or anyone on your behalf conducted surveillance of any individual involved in the incident or any party to this action?', rogRef: '13.1' },
+          { id: 'conductedSurveillance', type: 'yesno', label: 'Have you or anyone on your behalf conducted surveillance of any individual involved in the incident or any party to this action?', showIf: 'hasAnyInvestigationInfo', rogRef: '13.1' },
           { id: 'surveillance', type: 'repeatable', label: 'Surveillance conducted', showIf: 'conductedSurveillance', rogRef: '13.1(a-d)', fields: [
             { id: 'subjectName', type: 'text', label: 'Name, address, phone of person surveilled' },
             { id: 'dateTimePlace', type: 'text', label: 'Date, time, place of surveillance' },
@@ -636,14 +646,15 @@ const CLIENTS = {
         id: 'statutory-violations',
         title: 'P. Statutory & Regulatory Violations',
         questions: [
-          { id: 'contendViolation', type: 'yesno', label: 'Do you contend that any person involved in the incident violated any statute, ordinance, or regulation that was a legal cause of the incident?', rogRef: '14.1' },
+          { id: 'hasStatutoryInfo', type: 'yesno', label: 'Do you have any knowledge about statutory or regulatory violations, or citations/charges issued, related to this incident?', rogRef: '14.1-14.2' },
+          { id: 'contendViolation', type: 'yesno', label: 'Do you contend that any person involved in the incident violated any statute, ordinance, or regulation that was a legal cause of the incident?', showIf: 'hasStatutoryInfo', rogRef: '14.1' },
           { id: 'violationContention', type: 'repeatable', label: 'Violations contended', showIf: 'contendViolation', rogRef: '14.1', fields: [
             { id: 'personName', type: 'text', label: 'Name of person' },
             { id: 'address', type: 'text', label: 'Address' },
             { id: 'phone', type: 'text', label: 'Phone' },
             { id: 'statuteViolated', type: 'textarea', label: 'Statute, ordinance, or regulation violated' }
           ]},
-          { id: 'wasCited', type: 'yesno', label: 'Was any person cited or charged with a violation of any statute, ordinance, or regulation as a result of this incident?', rogRef: '14.2' },
+          { id: 'wasCited', type: 'yesno', label: 'Was any person cited or charged with a violation of any statute, ordinance, or regulation as a result of this incident?', showIf: 'hasStatutoryInfo', rogRef: '14.2' },
           { id: 'citations', type: 'repeatable', label: 'Citations/charges', showIf: 'wasCited', rogRef: '14.2(a-d)', fields: [
             { id: 'personName', type: 'text', label: 'Name of person' },
             { id: 'address', type: 'text', label: 'Address and phone' },
