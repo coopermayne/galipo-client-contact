@@ -207,17 +207,17 @@ const CLIENTS = {
       },
       {
         id: 'incident-questions',
-        title: 'C. Questions About the Time of the Incident',
-        description: 'The following questions ask about your situation at or around the time of Dominick\'s death (July 21, 2023). Most people will answer "No" to these questions.',
+        title: 'C. Questions About Contributing to the Incident',
+        description: 'These are standard legal questions asking whether YOU played any role in causing Dominick\'s death. As a family member bringing this lawsuit, you almost certainly did not - so you will likely answer "No" to all of these.',
         questions: [
-          { id: 'wasActingAsAgent', type: 'yesno', label: 'At the time of Dominick\'s death, were you acting as an agent or employee for any person in connection with the incident?', rogRef: '2.11' },
+          { id: 'wasActingAsAgent', type: 'yesno', label: 'At the time of Dominick\'s death, were you acting as an agent or employee for any person in a way that contributed to causing the incident?', rogRef: '2.11' },
           { id: 'agentDetails', type: 'repeatable', label: 'Agency/employment details', showIf: 'wasActingAsAgent', rogRef: '2.11(a-b)', fields: [
             { id: 'name', type: 'text', label: 'Name of that person/entity' },
             { id: 'address', type: 'text', label: 'Address' },
             { id: 'phone', type: 'text', label: 'Phone number' },
             { id: 'duties', type: 'textarea', label: 'Description of your duties' }
           ]},
-          { id: 'hadDisability', type: 'yesno', label: 'At the time of Dominick\'s death, did you or any other person have any physical, emotional, or mental disability or condition that may have contributed to the occurrence of the incident?', rogRef: '2.12' },
+          { id: 'hadDisability', type: 'yesno', label: 'Did you have any physical, emotional, or mental disability or condition that contributed to CAUSING Dominick\'s death?', rogRef: '2.12' },
           { id: 'disabilityDetails', type: 'repeatable', label: 'Disability/condition details', showIf: 'hadDisability', rogRef: '2.12(a-c)', fields: [
             { id: 'personName', type: 'text', label: 'Name of person' },
             { id: 'address', type: 'text', label: 'Address' },
@@ -225,7 +225,7 @@ const CLIENTS = {
             { id: 'nature', type: 'textarea', label: 'Nature of the disability or condition' },
             { id: 'howContributed', type: 'textarea', label: 'How it contributed to the incident' }
           ]},
-          { id: 'usedSubstances', type: 'yesno', label: 'Within 24 hours before Dominick\'s death, did you or any person involved use any alcoholic beverage, marijuana, or other drug or medication?', rogRef: '2.13' },
+          { id: 'usedSubstances', type: 'yesno', label: 'Within 24 hours before Dominick\'s death, did you use any substance (alcohol, drugs, medication) that contributed to CAUSING the incident?', rogRef: '2.13' },
           { id: 'substanceDetails', type: 'repeatable', label: 'Substance use details', showIf: 'usedSubstances', rogRef: '2.13(a-g)', fields: [
             { id: 'personName', type: 'text', label: 'Name of person' },
             { id: 'address', type: 'text', label: 'Address' },
@@ -329,7 +329,15 @@ const CLIENTS = {
             { id: 'duties', type: 'text', label: 'Job duties/responsibilities' }
           ]},
           { id: 'dominickSkillsHobbies', type: 'textarea', label: 'Describe Dominick\'s skills, hobbies, and interests' },
-          { id: 'dominickPersonality', type: 'textarea', label: 'Describe Dominick\'s personality and character' }
+          { id: 'dominickPersonality', type: 'textarea', label: 'Describe Dominick\'s personality and character' },
+          { id: 'hasCharacterWitnesses', type: 'yesno', label: 'Are there other people who could speak about Dominick\'s character, personality, or his relationship with you and your family?' },
+          { id: 'characterWitnesses', type: 'repeatable', label: 'Character/relationship witnesses', showIf: 'hasCharacterWitnesses', fields: [
+            { id: 'name', type: 'text', label: 'Name' },
+            { id: 'address', type: 'text', label: 'Address' },
+            { id: 'phone', type: 'text', label: 'Phone number' },
+            { id: 'relationship', type: 'text', label: 'Relationship to Dominick (friend, coworker, neighbor, etc.)' },
+            { id: 'whatTheyKnow', type: 'textarea', label: 'What can they speak to? (Dominick\'s character, your relationship with him, etc.)' }
+          ]}
         ]
       },
       {
