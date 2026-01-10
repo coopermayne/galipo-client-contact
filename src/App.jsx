@@ -137,7 +137,9 @@ const CLIENTS = {
         id: 'basic-info',
         title: 'A. Your Basic Information',
         questions: [
-          { id: 'fullName', type: 'text', label: 'Full legal name', rogRef: '2.1(a)' },
+          { id: 'nameDisplay', type: 'static', label: 'Your name as it appears in court records:', value: 'Shalymmar Pool' },
+          { id: 'nameNeedsCorrection', type: 'yesno', label: 'Does the spelling of your name need to be corrected?', rogRef: '2.1(a)' },
+          { id: 'correctedName', type: 'text', label: 'Please provide the correct spelling of your name', showIf: 'nameNeedsCorrection', rogRef: '2.1(a)' },
           { id: 'hasOtherNames', type: 'yesno', label: 'Have you ever used any other names (maiden, nickname, alias)?', rogRef: '2.1(b)' },
           { id: 'otherNamesList', type: 'repeatable', label: 'Other names used', showIf: 'hasOtherNames', rogRef: '2.1(b)(c)', fields: [
             { id: 'name', type: 'text', label: 'Name' },
@@ -746,7 +748,9 @@ const CLIENTS = {
         title: 'A. Guardian Ad Litem Information',
         description: 'As the Guardian Ad Litem, please provide your own contact information first.',
         questions: [
-          { id: 'galFullName', type: 'text', label: 'Your full legal name' },
+          { id: 'galNameDisplay', type: 'static', label: 'Your name as it appears in court records:', value: 'Olivia Watkins' },
+          { id: 'galNameNeedsCorrection', type: 'yesno', label: 'Does the spelling of your name need to be corrected?' },
+          { id: 'galCorrectedName', type: 'text', label: 'Please provide the correct spelling of your name', showIf: 'galNameNeedsCorrection' },
           { id: 'galAddress', type: 'textarea', label: 'Your current address (street, city, state, zip)' },
           { id: 'galPhone', type: 'text', label: 'Your phone number' },
           { id: 'galEmail', type: 'text', label: 'Your email address' },
@@ -758,7 +762,9 @@ const CLIENTS = {
         title: 'B. Adam Ryden Alvarado - Basic Information',
         description: 'Please provide the following information for Adam Ryden Alvarado.',
         questions: [
-          { id: 'adam_fullName', type: 'text', label: 'Full legal name', placeholder: 'Adam Ryden Alvarado' },
+          { id: 'adam_nameDisplay', type: 'static', label: 'Name as it appears in court records:', value: 'Adam Ryden Alvarado' },
+          { id: 'adam_nameNeedsCorrection', type: 'yesno', label: 'Does the spelling of Adam\'s name need to be corrected?' },
+          { id: 'adam_correctedName', type: 'text', label: 'Please provide the correct spelling of Adam\'s name', showIf: 'adam_nameNeedsCorrection' },
           { id: 'adam_dateOfBirth', type: 'date', label: 'Date of birth', rogRef: '2.2' },
           { id: 'adam_placeOfBirth', type: 'text', label: 'Place of birth (city, state, country)', rogRef: '2.2' },
           { id: 'adam_currentAddress', type: 'textarea', label: 'Current address (street, city, state, zip)', rogRef: '2.5(a)' },
@@ -801,7 +807,9 @@ const CLIENTS = {
         title: 'C. Adalynn Nadine Alvarado - Basic Information',
         description: 'Please provide the following information for Adalynn Nadine Alvarado.',
         questions: [
-          { id: 'adalynn_fullName', type: 'text', label: 'Full legal name', placeholder: 'Adalynn Nadine Alvarado' },
+          { id: 'adalynn_nameDisplay', type: 'static', label: 'Name as it appears in court records:', value: 'Adalynn Nadine Alvarado' },
+          { id: 'adalynn_nameNeedsCorrection', type: 'yesno', label: 'Does the spelling of Adalynn\'s name need to be corrected?' },
+          { id: 'adalynn_correctedName', type: 'text', label: 'Please provide the correct spelling of Adalynn\'s name', showIf: 'adalynn_nameNeedsCorrection' },
           { id: 'adalynn_dateOfBirth', type: 'date', label: 'Date of birth', rogRef: '2.2' },
           { id: 'adalynn_placeOfBirth', type: 'text', label: 'Place of birth (city, state, country)', rogRef: '2.2' },
           { id: 'adalynn_currentAddress', type: 'textarea', label: 'Current address (street, city, state, zip)', rogRef: '2.5(a)' },
@@ -844,7 +852,9 @@ const CLIENTS = {
         title: 'D. Xzavier Rydge Alvarado - Basic Information',
         description: 'Please provide the following information for Xzavier Rydge Alvarado.',
         questions: [
-          { id: 'xzavier_fullName', type: 'text', label: 'Full legal name', placeholder: 'Xzavier Rydge Alvarado' },
+          { id: 'xzavier_nameDisplay', type: 'static', label: 'Name as it appears in court records:', value: 'Xzavier Rydge Alvarado' },
+          { id: 'xzavier_nameNeedsCorrection', type: 'yesno', label: 'Does the spelling of Xzavier\'s name need to be corrected?' },
+          { id: 'xzavier_correctedName', type: 'text', label: 'Please provide the correct spelling of Xzavier\'s name', showIf: 'xzavier_nameNeedsCorrection' },
           { id: 'xzavier_dateOfBirth', type: 'date', label: 'Date of birth', rogRef: '2.2' },
           { id: 'xzavier_placeOfBirth', type: 'text', label: 'Place of birth (city, state, country)', rogRef: '2.2' },
           { id: 'xzavier_currentAddress', type: 'textarea', label: 'Current address (street, city, state, zip)', rogRef: '2.5(a)' },
@@ -887,7 +897,9 @@ const CLIENTS = {
         title: 'E. Noah Rylan Alvarado - Basic Information',
         description: 'Please provide the following information for Noah Rylan Alvarado.',
         questions: [
-          { id: 'noah_fullName', type: 'text', label: 'Full legal name', placeholder: 'Noah Rylan Alvarado' },
+          { id: 'noah_nameDisplay', type: 'static', label: 'Name as it appears in court records:', value: 'Noah Rylan Alvarado' },
+          { id: 'noah_nameNeedsCorrection', type: 'yesno', label: 'Does the spelling of Noah\'s name need to be corrected?' },
+          { id: 'noah_correctedName', type: 'text', label: 'Please provide the correct spelling of Noah\'s name', showIf: 'noah_nameNeedsCorrection' },
           { id: 'noah_dateOfBirth', type: 'date', label: 'Date of birth', rogRef: '2.2' },
           { id: 'noah_placeOfBirth', type: 'text', label: 'Place of birth (city, state, country)', rogRef: '2.2' },
           { id: 'noah_currentAddress', type: 'textarea', label: 'Current address (street, city, state, zip)', rogRef: '2.5(a)' },
@@ -930,7 +942,9 @@ const CLIENTS = {
         title: 'F. Nathan Ryan Alvarado - Basic Information',
         description: 'Please provide the following information for Nathan Ryan Alvarado.',
         questions: [
-          { id: 'nathan_fullName', type: 'text', label: 'Full legal name', placeholder: 'Nathan Ryan Alvarado' },
+          { id: 'nathan_nameDisplay', type: 'static', label: 'Name as it appears in court records:', value: 'Nathan Ryan Alvarado' },
+          { id: 'nathan_nameNeedsCorrection', type: 'yesno', label: 'Does the spelling of Nathan\'s name need to be corrected?' },
+          { id: 'nathan_correctedName', type: 'text', label: 'Please provide the correct spelling of Nathan\'s name', showIf: 'nathan_nameNeedsCorrection' },
           { id: 'nathan_dateOfBirth', type: 'date', label: 'Date of birth', rogRef: '2.2' },
           { id: 'nathan_placeOfBirth', type: 'text', label: 'Place of birth (city, state, country)', rogRef: '2.2' },
           { id: 'nathan_currentAddress', type: 'textarea', label: 'Current address (street, city, state, zip)', rogRef: '2.5(a)' },
@@ -1197,7 +1211,9 @@ const CLIENTS = {
         title: 'A. Guardian Ad Litem Information',
         description: 'As the Guardian Ad Litem, please provide your own contact information first.',
         questions: [
-          { id: 'galFullName', type: 'text', label: 'Your full legal name' },
+          { id: 'galNameDisplay', type: 'static', label: 'Your name as it appears in court records:', value: 'Ashley Vasquez' },
+          { id: 'galNameNeedsCorrection', type: 'yesno', label: 'Does the spelling of your name need to be corrected?' },
+          { id: 'galCorrectedName', type: 'text', label: 'Please provide the correct spelling of your name', showIf: 'galNameNeedsCorrection' },
           { id: 'galAddress', type: 'textarea', label: 'Your current address (street, city, state, zip)' },
           { id: 'galPhone', type: 'text', label: 'Your phone number' },
           { id: 'galEmail', type: 'text', label: 'Your email address' },
@@ -1209,7 +1225,9 @@ const CLIENTS = {
         title: 'B. Caleb Aiden Alvarado - Basic Information',
         description: 'Please provide the following information for Caleb Aiden Alvarado.',
         questions: [
-          { id: 'caleb_fullName', type: 'text', label: 'Full legal name', placeholder: 'Caleb Aiden Alvarado' },
+          { id: 'caleb_nameDisplay', type: 'static', label: 'Name as it appears in court records:', value: 'Caleb Aiden Alvarado' },
+          { id: 'caleb_nameNeedsCorrection', type: 'yesno', label: 'Does the spelling of Caleb\'s name need to be corrected?' },
+          { id: 'caleb_correctedName', type: 'text', label: 'Please provide the correct spelling of Caleb\'s name', showIf: 'caleb_nameNeedsCorrection' },
           { id: 'caleb_dateOfBirth', type: 'date', label: 'Date of birth', rogRef: '2.2' },
           { id: 'caleb_placeOfBirth', type: 'text', label: 'Place of birth (city, state, country)', rogRef: '2.2' },
           { id: 'caleb_currentAddress', type: 'textarea', label: 'Current address (street, city, state, zip)', rogRef: '2.5(a)' },
@@ -1486,6 +1504,7 @@ function calculateProgress(sections, responses) {
   let answeredQuestions = 0
 
   const isAnswered = (question, value) => {
+    if (question.type === 'static') return true // Static fields don't need answers
     if (value === undefined || value === null || value === '') return false
     if (question.type === 'yesno') return value === true || value === false
     if (question.type === 'multiselect') return Array.isArray(value) && value.length > 0
@@ -1874,6 +1893,12 @@ function Question({ question, value, onChange, responses, disabled, comments, on
         return <Checklist options={question.options} value={value} onChange={onChange} disabled={disabled} />
       case 'repeatable':
         return <RepeatableField fields={question.fields} value={value} onChange={onChange} disabled={disabled} />
+      case 'static':
+        return (
+          <div className="py-2 px-3 bg-gray-100 rounded-md text-gray-800 font-medium">
+            {question.value}
+          </div>
+        )
       default:
         return null
     }
@@ -2561,6 +2586,14 @@ function formatResponsesAsText(client, responses) {
         const parentValue = responses[question.showIf]
         const expectedValue = question.showIfValue !== undefined ? question.showIfValue : true
         if (parentValue !== expectedValue) continue
+      }
+
+      // Handle static fields specially - they use question.value, not responses
+      if (question.type === 'static') {
+        const rogLabel = question.rogRef ? ` [Rog ${question.rogRef}]` : ''
+        text += `**${question.label}**${rogLabel}\n`
+        text += question.value + '\n\n'
+        continue
       }
 
       const value = responses[question.id]
