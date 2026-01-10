@@ -737,6 +737,46 @@ const CLIENTS = {
         ]
       }
     ]
+  },
+  'alvarado-watkins': {
+    clientName: 'Olivia Watkins',
+    caseName: 'Alvarado v. State of California, et al.',
+    caseNumber: '25STCV35294',
+    decedent: 'Dominick Alvarado',
+    decedentDOD: 'July 21, 2023',
+    deadline: 'January 26, 2026',
+    passwordPrefix: 'Watkins',
+    dropboxLink: '',
+    sections: [
+      {
+        id: 'basic-info',
+        title: 'A. Your Basic Information',
+        questions: [
+          { id: 'fullName', type: 'text', label: 'Full legal name' },
+          { id: 'dateOfBirth', type: 'date', label: 'Date of birth' }
+        ]
+      }
+    ]
+  },
+  'alvarado-vasquez': {
+    clientName: 'Ashley Vasquez',
+    caseName: 'Alvarado v. State of California, et al.',
+    caseNumber: '25STCV35294',
+    decedent: 'Dominick Alvarado',
+    decedentDOD: 'July 21, 2023',
+    deadline: 'January 26, 2026',
+    passwordPrefix: 'Vasquez',
+    dropboxLink: '',
+    sections: [
+      {
+        id: 'basic-info',
+        title: 'A. Your Basic Information',
+        questions: [
+          { id: 'fullName', type: 'text', label: 'Full legal name' },
+          { id: 'dateOfBirth', type: 'date', label: 'Date of birth' }
+        ]
+      }
+    ]
   }
 }
 
@@ -807,30 +847,42 @@ function calculateProgress(sections, responses) {
 // ============================================================================
 
 function YesNoToggle({ value, onChange, disabled }) {
+  const handleClick = (newValue) => {
+    if (disabled) return
+    // If clicking the already-selected value, deselect it
+    if (value === newValue) {
+      onChange(undefined)
+    } else {
+      onChange(newValue)
+    }
+  }
+
   return (
     <div className="flex gap-6">
-      <label className={`flex items-center gap-2 ${disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'}`}>
-        <input
-          type="radio"
-          name={`yesno-${Math.random()}`}
-          checked={value === true}
-          onChange={() => !disabled && onChange(true)}
-          disabled={disabled}
-          className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"
-        />
-        <span className="text-gray-700">Yes</span>
-      </label>
-      <label className={`flex items-center gap-2 ${disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'}`}>
-        <input
-          type="radio"
-          name={`yesno-${Math.random()}`}
-          checked={value === false}
-          onChange={() => !disabled && onChange(false)}
-          disabled={disabled}
-          className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"
-        />
-        <span className="text-gray-700">No</span>
-      </label>
+      <button
+        type="button"
+        onClick={() => handleClick(true)}
+        disabled={disabled}
+        className={`flex items-center gap-2 px-3 py-1 rounded-md border transition-colors ${
+          value === true
+            ? 'bg-blue-100 border-blue-500 text-blue-700'
+            : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+        } ${disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'}`}
+      >
+        <span>Yes</span>
+      </button>
+      <button
+        type="button"
+        onClick={() => handleClick(false)}
+        disabled={disabled}
+        className={`flex items-center gap-2 px-3 py-1 rounded-md border transition-colors ${
+          value === false
+            ? 'bg-blue-100 border-blue-500 text-blue-700'
+            : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+        } ${disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'}`}
+      >
+        <span>No</span>
+      </button>
     </div>
   )
 }
