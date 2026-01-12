@@ -154,7 +154,7 @@ const CLIENTS = {
             { id: 'address', type: 'textarea', label: 'Address' },
             { id: 'dates', type: 'text', label: 'Dates lived there (from - to)' }
           ]},
-          { id: 'hadDriversLicense', type: 'yesno', label: 'At the time of Dominick\'s death (July 21, 2023), did you have a driver\'s license?', rogRef: '2.3' },
+          { id: 'hadDriversLicense', type: 'yesno', label: 'Do you have a driver\'s license?', rogRef: '2.3' },
           { id: 'driversLicenseDetails', type: 'repeatable', label: 'Driver\'s license details', showIf: 'hadDriversLicense', rogRef: '2.3(a-d)', fields: [
             { id: 'state', type: 'text', label: 'Issuing state' },
             { id: 'licenseNumber', type: 'text', label: 'License number' },
@@ -162,15 +162,7 @@ const CLIENTS = {
             { id: 'issueDate', type: 'text', label: 'Date of issuance' },
             { id: 'restrictions', type: 'text', label: 'Any restrictions (or "None")' }
           ]},
-          { id: 'hadOtherPermit', type: 'yesno', label: 'Did you have any other permit or license for operation of a motor vehicle at that time?', rogRef: '2.4' },
-          { id: 'otherPermitDetails', type: 'repeatable', label: 'Other permits/licenses', showIf: 'hadOtherPermit', rogRef: '2.4(a-d)', fields: [
-            { id: 'state', type: 'text', label: 'Issuing state/entity' },
-            { id: 'licenseNumber', type: 'text', label: 'License/permit number' },
-            { id: 'type', type: 'text', label: 'Type' },
-            { id: 'issueDate', type: 'text', label: 'Date of issuance' },
-            { id: 'restrictions', type: 'text', label: 'Any restrictions' }
-          ]},
-          { id: 'speaksEnglish', type: 'yesno', label: 'Do you speak English with ease?', rogRef: '2.9' },
+                    { id: 'speaksEnglish', type: 'yesno', label: 'Do you speak English with ease?', rogRef: '2.9' },
           { id: 'speaksEnglishLanguage', type: 'text', label: 'What language and dialect do you normally use?', showIf: 'speaksEnglish', showIfValue: false, rogRef: '2.9' },
           { id: 'readsWritesEnglish', type: 'yesno', label: 'Do you read and write English with ease?', rogRef: '2.10' },
           { id: 'readsWritesEnglishLanguage', type: 'text', label: 'What language and dialect do you normally use for reading/writing?', showIf: 'readsWritesEnglish', showIfValue: false, rogRef: '2.10' },
@@ -208,42 +200,8 @@ const CLIENTS = {
         ]
       },
       {
-        id: 'incident-questions',
-        title: 'C. Questions About Contributing to the Incident',
-        description: 'These are standard legal questions asking whether YOU played any role in causing Dominick\'s death. As a family member bringing this lawsuit, you almost certainly did not - so you will likely answer "No" to all of these.',
-        questions: [
-          { id: 'wasActingAsAgent', type: 'yesno', label: 'At the time of Dominick\'s death, were you acting as an agent or employee for any person in a way that contributed to causing the incident?', rogRef: '2.11' },
-          { id: 'agentDetails', type: 'repeatable', label: 'Agency/employment details', showIf: 'wasActingAsAgent', rogRef: '2.11(a-b)', fields: [
-            { id: 'name', type: 'text', label: 'Name of that person/entity' },
-            { id: 'address', type: 'text', label: 'Address' },
-            { id: 'phone', type: 'text', label: 'Phone number' },
-            { id: 'duties', type: 'textarea', label: 'Description of your duties' }
-          ]},
-          { id: 'hadDisability', type: 'yesno', label: 'Did you have any physical, emotional, or mental disability or condition that contributed to CAUSING Dominick\'s death?', rogRef: '2.12' },
-          { id: 'disabilityDetails', type: 'repeatable', label: 'Disability/condition details', showIf: 'hadDisability', rogRef: '2.12(a-c)', fields: [
-            { id: 'personName', type: 'text', label: 'Name of person' },
-            { id: 'address', type: 'text', label: 'Address' },
-            { id: 'phone', type: 'text', label: 'Phone number' },
-            { id: 'nature', type: 'textarea', label: 'Nature of the disability or condition' },
-            { id: 'howContributed', type: 'textarea', label: 'How it contributed to the incident' }
-          ]},
-          { id: 'usedSubstances', type: 'yesno', label: 'Within 24 hours before Dominick\'s death, did you use any substance (alcohol, drugs, medication) that contributed to CAUSING the incident?', rogRef: '2.13' },
-          { id: 'substanceDetails', type: 'repeatable', label: 'Substance use details', showIf: 'usedSubstances', rogRef: '2.13(a-g)', fields: [
-            { id: 'personName', type: 'text', label: 'Name of person' },
-            { id: 'address', type: 'text', label: 'Address' },
-            { id: 'phone', type: 'text', label: 'Phone number' },
-            { id: 'substance', type: 'text', label: 'Nature/description of substance' },
-            { id: 'quantity', type: 'text', label: 'Quantity used' },
-            { id: 'dateTime', type: 'text', label: 'Date and time used' },
-            { id: 'location', type: 'text', label: 'Location where used' },
-            { id: 'witnesses', type: 'textarea', label: 'Names of persons present when used (name, address, phone)' },
-            { id: 'prescriber', type: 'textarea', label: 'If prescribed: healthcare provider name, address, phone, and condition for which prescribed' }
-          ]}
-        ]
-      },
-      {
         id: 'relationship',
-        title: 'D. Your Relationship to Dominick',
+        title: 'C. Your Relationship to Dominick',
         questions: [
           { id: 'relationshipType', type: 'text', label: 'What is/was your relationship to Dominick?', placeholder: 'e.g., biological mother, adoptive mother, stepmother' },
           { id: 'knowsDominickAddresses', type: 'yesno', label: 'Do you know where Dominick lived in the past 10 years?' },
@@ -263,7 +221,7 @@ const CLIENTS = {
       },
       {
         id: 'financial-support',
-        title: 'E. Financial Support from Dominick',
+        title: 'D. Financial Support from Dominick',
         questions: [
           { id: 'receivedAnySupport', type: 'yesno', label: 'Did Dominick ever provide you with any financial support, purchase items for you, or provide household services?' },
           { id: 'receivedFinancialSupport', type: 'yesno', label: 'Did Dominick provide you with direct financial support (cash, payments)?', showIf: 'receivedAnySupport' },
@@ -288,7 +246,7 @@ const CLIENTS = {
       },
       {
         id: 'shared-experiences',
-        title: 'F. Relationship & Shared Experiences',
+        title: 'E. Relationship & Shared Experiences',
         questions: [
           { id: 'hadSharedExperiences', type: 'yesno', label: 'Did you and Dominick spend time together at events, social gatherings, or vacations?' },
           { id: 'majorLifeEvents', type: 'yesno', label: 'Did Dominick participate in major life events with you (birthdays, holidays, graduations, etc.)?', showIf: 'hadSharedExperiences' },
@@ -311,7 +269,7 @@ const CLIENTS = {
       },
       {
         id: 'dominick-background',
-        title: 'G. Dominick\'s Background, Education & Career',
+        title: 'F. Dominick\'s Background, Education & Career',
         questions: [
           { id: 'dominickDOB', type: 'date', label: 'Dominick\'s date of birth' },
           { id: 'dominickPlaceOfBirth', type: 'text', label: 'Dominick\'s place of birth (city, state, country)' },
@@ -344,7 +302,7 @@ const CLIENTS = {
       },
       {
         id: 'health-history',
-        title: 'H. Dominick\'s Health & Medical History',
+        title: 'G. Dominick\'s Health & Medical History',
         questions: [
           { id: 'knowsAboutDominickHealth', type: 'yesno', label: 'Do you have any knowledge about Dominick\'s healthcare, medical conditions, medications, mental health treatment, or incarceration history?' },
           { id: 'knowsHealthcareProviders', type: 'yesno', label: 'Do you know of any healthcare providers who treated Dominick?', showIf: 'knowsAboutDominickHealth' },
@@ -386,7 +344,7 @@ const CLIENTS = {
       },
       {
         id: 'your-injuries',
-        title: 'I. Your Injuries & Treatment',
+        title: 'H. Your Injuries & Treatment',
         description: 'These questions ask about physical, mental, or emotional injuries YOU have experienced as a result of Dominick\'s death.',
         questions: [
           { id: 'hasInjuries', type: 'yesno', label: 'Do you attribute any physical, mental, or emotional injuries to Dominick\'s death?', rogRef: '6.1' },
@@ -430,7 +388,7 @@ const CLIENTS = {
       },
       {
         id: 'your-damages',
-        title: 'J. Your Damages & Losses',
+        title: 'I. Your Damages & Losses',
         description: 'Please describe how Dominick\'s death has affected you emotionally, financially, and otherwise.',
         questions: [
           { id: 'lossOfLoveDescription', type: 'textarea', label: 'Describe the loss of love, companionship, comfort, care, assistance, protection, affection, society, and moral support you have experienced since Dominick\'s death' },
@@ -493,7 +451,7 @@ const CLIENTS = {
       },
       {
         id: 'medical-history',
-        title: 'K. Your Medical History',
+        title: 'J. Your Medical History',
         description: 'These questions ask about your medical history before and after Dominick\'s death.',
         questions: [
           { id: 'hasRelevantMedicalHistory', type: 'yesno', label: 'Do you have any relevant medical history - prior complaints, disabilities, or injuries sustained after Dominick\'s death - that might relate to your current claims?', rogRef: '10.1-10.3' },
@@ -517,7 +475,7 @@ const CLIENTS = {
       },
       {
         id: 'prior-claims',
-        title: 'L. Prior Claims & Lawsuits',
+        title: 'K. Prior Claims & Lawsuits',
         questions: [
           { id: 'hasPriorLawsuits', type: 'yesno', label: 'In the past 10 years, have you filed an action or made a written claim or demand for compensation for your personal injuries (other than this case)?', rogRef: '11.1' },
           { id: 'priorLawsuitsList', type: 'repeatable', label: 'Prior lawsuits/claims', showIf: 'hasPriorLawsuits', rogRef: '11.1(a-f)', fields: [
@@ -542,7 +500,7 @@ const CLIENTS = {
       },
       {
         id: 'funeral-expenses',
-        title: 'M. Funeral & Burial Expenses',
+        title: 'L. Funeral & Burial Expenses',
         questions: [
           { id: 'hasFuneralExpenses', type: 'yesno', label: 'Were there funeral and burial expenses?' },
           { id: 'funeralExpenses', type: 'repeatable', label: 'Funeral and burial expenses', showIf: 'hasFuneralExpenses', fields: [
@@ -560,7 +518,7 @@ const CLIENTS = {
       },
       {
         id: 'insurance',
-        title: 'N. Insurance',
+        title: 'M. Insurance',
         questions: [
           { id: 'hasAnyInsuranceInfo', type: 'yesno', label: 'Do you have any insurance-related information relevant to this case (your insurance, self-insurance, or life insurance on Dominick)?', rogRef: '4.1-4.2' },
           { id: 'hadInsuranceCoverage', type: 'yesno', label: 'At the time of Dominick\'s death, did you have any insurance that might cover damages from this incident (liability, medical expense, etc.)?', showIf: 'hasAnyInsuranceInfo', rogRef: '4.1' },
@@ -583,7 +541,7 @@ const CLIENTS = {
       },
       {
         id: 'investigation',
-        title: 'O. Investigation & Evidence',
+        title: 'N. Investigation & Evidence',
         description: 'These questions ask about witnesses, statements, photographs, and other evidence related to Dominick\'s death.',
         questions: [
           { id: 'hasAnyInvestigationInfo', type: 'yesno', label: 'Do you have any knowledge of witnesses, evidence, photographs, reports, or investigations related to this incident?', rogRef: '12.1-12.7' },
@@ -654,7 +612,7 @@ const CLIENTS = {
       },
       {
         id: 'statutory-violations',
-        title: 'P. Statutory & Regulatory Violations',
+        title: 'O. Statutory & Regulatory Violations',
         questions: [
           { id: 'hasStatutoryInfo', type: 'yesno', label: 'Do you have any knowledge about statutory or regulatory violations, or citations/charges issued, related to this incident?', rogRef: '14.1-14.2' },
           { id: 'contendViolation', type: 'yesno', label: 'Do you contend that any person involved in the incident violated any statute, ordinance, or regulation that was a legal cause of the incident?', showIf: 'hasStatutoryInfo', rogRef: '14.1' },
@@ -676,7 +634,7 @@ const CLIENTS = {
       },
       {
         id: 'documents-checklist',
-        title: 'Q. Documents Checklist',
+        title: 'P. Documents Checklist',
         description: 'Please check all documents you have access to and can provide. This helps us know what evidence we can use to support your case.',
         questions: [
           { id: 'docs_identity', type: 'checklist', label: 'Identity & Relationship Documents', options: [
@@ -718,7 +676,7 @@ const CLIENTS = {
       },
       {
         id: 'final-questions',
-        title: 'R. Final Questions',
+        title: 'Q. Final Questions',
         questions: [
           { id: 'responsePrepHelpers', type: 'repeatable', label: 'Who helped you prepare these responses? (List each person who prepared or assisted)', rogRef: '1.1', fields: [
             { id: 'name', type: 'text', label: 'Name' },
@@ -745,21 +703,171 @@ const CLIENTS = {
     sections: [
       {
         id: 'gal-info',
-        title: 'A. Guardian Ad Litem Information',
+        title: 'A. Your Basic Information',
         description: 'As the Guardian Ad Litem, please provide your own contact information first.',
         questions: [
           { id: 'galNameDisplay', type: 'static', label: 'Your name as it appears in court records:', value: 'Olivia Watkins' },
           { id: 'galNameNeedsCorrection', type: 'yesno', label: 'Does the spelling of your name need to be corrected?' },
           { id: 'galCorrectedName', type: 'text', label: 'Please provide the correct spelling of your name', showIf: 'galNameNeedsCorrection' },
+          { id: 'hasOtherNames', type: 'yesno', label: 'Have you ever used any other names (maiden, nickname, alias)?' },
+          { id: 'otherNamesList', type: 'repeatable', label: 'Other names used', showIf: 'hasOtherNames', fields: [
+            { id: 'name', type: 'text', label: 'Name' },
+            { id: 'datesUsed', type: 'text', label: 'Approximate dates used' }
+          ]},
+          { id: 'dateOfBirth', type: 'date', label: 'Date of birth' },
+          { id: 'placeOfBirth', type: 'text', label: 'Place of birth (city, state, country)' },
           { id: 'galAddress', type: 'textarea', label: 'Your current address (street, city, state, zip)' },
           { id: 'galPhone', type: 'text', label: 'Your phone number' },
           { id: 'galEmail', type: 'text', label: 'Your email address' },
+          { id: 'hasPriorAddresses', type: 'yesno', label: 'Have you lived at any other addresses in the past 5 years?' },
+          { id: 'priorAddresses', type: 'repeatable', label: 'Prior addresses', showIf: 'hasPriorAddresses', fields: [
+            { id: 'address', type: 'textarea', label: 'Address' },
+            { id: 'dates', type: 'text', label: 'Dates lived there (from - to)' }
+          ]},
+          { id: 'hadDriversLicense', type: 'yesno', label: 'Do you have a driver\'s license?' },
+          { id: 'driversLicenseDetails', type: 'repeatable', label: 'Driver\'s license details', showIf: 'hadDriversLicense', fields: [
+            { id: 'state', type: 'text', label: 'Issuing state' },
+            { id: 'licenseNumber', type: 'text', label: 'License number' },
+            { id: 'type', type: 'text', label: 'License type (e.g., Class C)' },
+            { id: 'issueDate', type: 'text', label: 'Date of issuance' },
+            { id: 'restrictions', type: 'text', label: 'Any restrictions (or "None")' }
+          ]},
+          { id: 'speaksEnglish', type: 'yesno', label: 'Do you speak English with ease?' },
+          { id: 'speaksEnglishLanguage', type: 'text', label: 'What language and dialect do you normally use?', showIf: 'speaksEnglish', showIfValue: false },
+          { id: 'readsWritesEnglish', type: 'yesno', label: 'Do you read and write English with ease?' },
+          { id: 'readsWritesEnglishLanguage', type: 'text', label: 'What language and dialect do you normally use for reading/writing?', showIf: 'readsWritesEnglish', showIfValue: false },
+          { id: 'hasFelony', type: 'yesno', label: 'Have you ever been convicted of a felony?' },
+          { id: 'felonyList', type: 'repeatable', label: 'Felony convictions', showIf: 'hasFelony', fields: [
+            { id: 'cityState', type: 'text', label: 'City and state where convicted' },
+            { id: 'date', type: 'text', label: 'Date of conviction' },
+            { id: 'offense', type: 'text', label: 'Offense' },
+            { id: 'courtCaseNumber', type: 'text', label: 'Court and case number' }
+          ]},
           { id: 'galRelationship', type: 'text', label: 'Your relationship to the children', placeholder: 'e.g., grandmother, aunt, family friend' }
         ]
       },
       {
+        id: 'your-background',
+        title: 'B. Your Employment & Education',
+        questions: [
+          { id: 'isCurrentlyEmployed', type: 'yesno', label: 'Are you currently employed or self-employed?' },
+          { id: 'currentEmployer', type: 'textarea', label: 'Current employer or self-employment (name, address, phone number)', showIf: 'isCurrentlyEmployed' },
+          { id: 'hasEmploymentHistory', type: 'yesno', label: 'Have you had any other employers in the past 5 years (before July 2023)?' },
+          { id: 'employmentHistory', type: 'repeatable', label: 'Employment history', showIf: 'hasEmploymentHistory', fields: [
+            { id: 'employer', type: 'text', label: 'Employer name' },
+            { id: 'address', type: 'text', label: 'Address' },
+            { id: 'dates', type: 'text', label: 'Dates of employment (from - to)' },
+            { id: 'jobTitle', type: 'text', label: 'Job title' },
+            { id: 'duties', type: 'text', label: 'Nature of work/duties' }
+          ]},
+          { id: 'hasEducationBeyondHighSchool', type: 'yesno', label: 'Did you attend any school or training beyond high school?' },
+          { id: 'highSchoolInfo', type: 'text', label: 'High school name and highest grade completed' },
+          { id: 'educationHistory', type: 'repeatable', label: 'Education beyond high school', showIf: 'hasEducationBeyondHighSchool', fields: [
+            { id: 'schoolName', type: 'text', label: 'School/institution name' },
+            { id: 'address', type: 'text', label: 'Address' },
+            { id: 'datesAttended', type: 'text', label: 'Dates attended' },
+            { id: 'highestGrade', type: 'text', label: 'Degree or certification received' }
+          ]}
+        ]
+      },
+      {
+        id: 'relationship',
+        title: 'C. Your Relationship to Dominick',
+        questions: [
+          { id: 'relationshipType', type: 'text', label: 'What is/was your relationship to Dominick?', placeholder: 'e.g., biological mother, adoptive mother, stepmother' },
+          { id: 'knowsDominickAddresses', type: 'yesno', label: 'Do you know where Dominick lived in the past 10 years?' },
+          { id: 'dominickAddresses', type: 'repeatable', label: 'Dominick\'s addresses', showIf: 'knowsDominickAddresses', fields: [
+            { id: 'address', type: 'textarea', label: 'Address' },
+            { id: 'dates', type: 'text', label: 'Dates (from - to)' },
+            { id: 'whoLivedWith', type: 'text', label: 'Who did Dominick live with at this address?' }
+          ]},
+          { id: 'livedWithDominick', type: 'yesno', label: 'Did you ever live with Dominick?' },
+          { id: 'livedWithDominickPeriods', type: 'repeatable', label: 'Times you lived with Dominick', showIf: 'livedWithDominick', fields: [
+            { id: 'location', type: 'text', label: 'Location/address' },
+            { id: 'dates', type: 'text', label: 'Dates (from - to)' }
+          ]},
+          { id: 'communicationFrequency', type: 'text', label: 'How frequently did you communicate with Dominick?', placeholder: 'e.g., daily, weekly, monthly' },
+          { id: 'communicationMethods', type: 'multiselect', label: 'How did you communicate with Dominick? (Select all that apply)', options: ['Phone calls', 'Text messages', 'In person', 'Video calls', 'Social media', 'Email'] }
+        ]
+      },
+      {
+        id: 'dominick-background',
+        title: 'D. Dominick\'s Background, Education & Career',
+        questions: [
+          { id: 'dominickDOB', type: 'date', label: 'Dominick\'s date of birth' },
+          { id: 'dominickPlaceOfBirth', type: 'text', label: 'Dominick\'s place of birth (city, state, country)' },
+          { id: 'knowsDominickEducation', type: 'yesno', label: 'Do you know about Dominick\'s education history?' },
+          { id: 'dominickEducation', type: 'repeatable', label: 'Dominick\'s education', showIf: 'knowsDominickEducation', fields: [
+            { id: 'schoolName', type: 'text', label: 'School name' },
+            { id: 'location', type: 'text', label: 'Location' },
+            { id: 'datesAttended', type: 'text', label: 'Dates attended (from - to)' },
+            { id: 'degreeOrGrade', type: 'text', label: 'Degree or highest grade completed' }
+          ]},
+          { id: 'knowsDominickEmployment', type: 'yesno', label: 'Do you know about Dominick\'s employment history?' },
+          { id: 'dominickEmployment', type: 'repeatable', label: 'Dominick\'s employment', showIf: 'knowsDominickEmployment', fields: [
+            { id: 'employer', type: 'text', label: 'Employer name' },
+            { id: 'jobTitle', type: 'text', label: 'Job title' },
+            { id: 'location', type: 'text', label: 'Location' },
+            { id: 'dates', type: 'text', label: 'Dates employed (from - to)' },
+            { id: 'duties', type: 'text', label: 'Job duties/responsibilities' }
+          ]},
+          { id: 'dominickSkillsHobbies', type: 'textarea', label: 'Describe Dominick\'s skills, hobbies, and interests' },
+          { id: 'dominickPersonality', type: 'textarea', label: 'Describe Dominick\'s personality and character' },
+          { id: 'hasCharacterWitnesses', type: 'yesno', label: 'Are there other people who could speak about Dominick\'s character, personality, or his relationship with you and your family?' },
+          { id: 'characterWitnesses', type: 'repeatable', label: 'Character/relationship witnesses', showIf: 'hasCharacterWitnesses', fields: [
+            { id: 'name', type: 'text', label: 'Name' },
+            { id: 'address', type: 'text', label: 'Address' },
+            { id: 'phone', type: 'text', label: 'Phone number' },
+            { id: 'relationship', type: 'text', label: 'Relationship to Dominick (friend, coworker, neighbor, etc.)' },
+            { id: 'whatTheyKnow', type: 'textarea', label: 'What can they speak to? (Dominick\'s character, your relationship with him, etc.)' }
+          ]}
+        ]
+      },
+      {
+        id: 'health-history',
+        title: 'E. Dominick\'s Health & Medical History',
+        questions: [
+          { id: 'knowsAboutDominickHealth', type: 'yesno', label: 'Do you have any knowledge about Dominick\'s healthcare, medical conditions, medications, mental health treatment, or incarceration history?' },
+          { id: 'knowsHealthcareProviders', type: 'yesno', label: 'Do you know of any healthcare providers who treated Dominick?', showIf: 'knowsAboutDominickHealth' },
+          { id: 'healthcareProviders', type: 'repeatable', label: 'Healthcare providers', showIf: 'knowsHealthcareProviders', fields: [
+            { id: 'name', type: 'text', label: 'Provider/facility name' },
+            { id: 'address', type: 'text', label: 'Address' },
+            { id: 'phone', type: 'text', label: 'Phone number' },
+            { id: 'treatment', type: 'text', label: 'Type of treatment' }
+          ]},
+          { id: 'hadConditionAtIncident', type: 'yesno', label: 'Was Dominick diagnosed with any medical conditions?', showIf: 'knowsAboutDominickHealth' },
+          { id: 'conditionsList', type: 'repeatable', label: 'Medical conditions', showIf: 'hadConditionAtIncident', fields: [
+            { id: 'condition', type: 'text', label: 'Condition name' },
+            { id: 'datesDiagnosed', type: 'text', label: 'When diagnosed' },
+            { id: 'treatment', type: 'text', label: 'Treatment received' }
+          ]},
+          { id: 'hadPrescriptions', type: 'yesno', label: 'Was Dominick taking any prescription medications?', showIf: 'knowsAboutDominickHealth' },
+          { id: 'prescriptionDetails', type: 'repeatable', label: 'Prescription medications', showIf: 'hadPrescriptions', fields: [
+            { id: 'name', type: 'text', label: 'Medication name' },
+            { id: 'dosage', type: 'text', label: 'Dosage' },
+            { id: 'doctor', type: 'text', label: 'Prescribing doctor' }
+          ]},
+          { id: 'hadMentalHealthTreatment', type: 'yesno', label: 'Was Dominick ever a patient at a mental health facility or received mental health treatment?', showIf: 'knowsAboutDominickHealth' },
+          { id: 'mentalHealthHistory', type: 'repeatable', label: 'Mental health treatment', showIf: 'hadMentalHealthTreatment', fields: [
+            { id: 'facility', type: 'text', label: 'Facility/provider name' },
+            { id: 'location', type: 'text', label: 'Location' },
+            { id: 'dates', type: 'text', label: 'Dates (from - to)' },
+            { id: 'reason', type: 'text', label: 'Reason for treatment' },
+            { id: 'description', type: 'textarea', label: 'Description of treatment' }
+          ]},
+          { id: 'wasIncarcerated', type: 'yesno', label: 'Was Dominick ever incarcerated?', showIf: 'knowsAboutDominickHealth' },
+          { id: 'incarcerationHistory', type: 'repeatable', label: 'Incarceration history', showIf: 'wasIncarcerated', fields: [
+            { id: 'facility', type: 'text', label: 'Facility name' },
+            { id: 'location', type: 'text', label: 'Location' },
+            { id: 'dates', type: 'text', label: 'Dates (from - to)' },
+            { id: 'charges', type: 'text', label: 'Charges/reason' },
+            { id: 'description', type: 'textarea', label: 'Additional details' }
+          ]}
+        ]
+      },
+      {
         id: 'child-adam',
-        title: 'B. Adam Ryden Alvarado - Basic Information',
+        title: 'F. Adam Ryden Alvarado - Basic Information',
         description: 'Please provide the following information for Adam Ryden Alvarado.',
         questions: [
           { id: 'adam_nameDisplay', type: 'static', label: 'Name as it appears in court records:', value: 'Adam Ryden Alvarado' },
@@ -784,7 +892,7 @@ const CLIENTS = {
       },
       {
         id: 'child-adalynn',
-        title: 'C. Adalynn Nadine Alvarado - Basic Information',
+        title: 'G. Adalynn Nadine Alvarado - Basic Information',
         description: 'Please provide the following information for Adalynn Nadine Alvarado.',
         questions: [
           { id: 'adalynn_nameDisplay', type: 'static', label: 'Name as it appears in court records:', value: 'Adalynn Nadine Alvarado' },
@@ -809,7 +917,7 @@ const CLIENTS = {
       },
       {
         id: 'child-xzavier',
-        title: 'D. Xzavier Rydge Alvarado - Basic Information',
+        title: 'H. Xzavier Rydge Alvarado - Basic Information',
         description: 'Please provide the following information for Xzavier Rydge Alvarado.',
         questions: [
           { id: 'xzavier_nameDisplay', type: 'static', label: 'Name as it appears in court records:', value: 'Xzavier Rydge Alvarado' },
@@ -834,7 +942,7 @@ const CLIENTS = {
       },
       {
         id: 'child-noah',
-        title: 'E. Noah Rylan Alvarado - Basic Information',
+        title: 'I. Noah Rylan Alvarado - Basic Information',
         description: 'Please provide the following information for Noah Rylan Alvarado.',
         questions: [
           { id: 'noah_nameDisplay', type: 'static', label: 'Name as it appears in court records:', value: 'Noah Rylan Alvarado' },
@@ -859,7 +967,7 @@ const CLIENTS = {
       },
       {
         id: 'child-nathan',
-        title: 'F. Nathan Ryan Alvarado - Basic Information',
+        title: 'J. Nathan Ryan Alvarado - Basic Information',
         description: 'Please provide the following information for Nathan Ryan Alvarado.',
         questions: [
           { id: 'nathan_nameDisplay', type: 'static', label: 'Name as it appears in court records:', value: 'Nathan Ryan Alvarado' },
@@ -884,7 +992,7 @@ const CLIENTS = {
       },
       {
         id: 'parental-rights',
-        title: 'G. Parental Rights & Court Proceedings',
+        title: 'K. Parental Rights & Court Proceedings',
         description: 'These questions ask about adoption, parental rights, and any court proceedings involving the children.',
         questions: [
           { id: 'anyChildAdopted', type: 'yesno', label: 'Have any of the children ever been adopted?', rogRef: 'SI-10' },
@@ -911,7 +1019,7 @@ const CLIENTS = {
       },
       {
         id: 'living-with-dominick',
-        title: 'H. Children Living with Dominick',
+        title: 'L. Children Living with Dominick',
         description: 'These questions ask about the periods when the children lived with Dominick. You may answer for all children together if they lived with him during the same periods.',
         questions: [
           { id: 'childrenLivedWithDominick', type: 'yesno', label: 'Did any of the children ever live with Dominick?', rogRef: 'SI-5' },
@@ -933,7 +1041,7 @@ const CLIENTS = {
       },
       {
         id: 'relationship-combined',
-        title: 'I. Children\'s Relationship with Dominick',
+        title: 'M. Children\'s Relationship with Dominick',
         description: 'These questions ask about all the children\'s relationship with their father Dominick. You may answer for all children together.',
         questions: [
           { id: 'activitiesTogether', type: 'textarea', label: 'Describe the activities that the children and Dominick enjoyed doing together as father and children', rogRef: 'SI-12' },
@@ -960,7 +1068,7 @@ const CLIENTS = {
       },
       {
         id: 'healthcare-treatment',
-        title: 'J. Healthcare Treatment Due to Dominick\'s Death',
+        title: 'N. Healthcare Treatment Due to Dominick\'s Death',
         description: 'These questions ask about any medical or mental health treatment the children have received as a result of Dominick\'s death.',
         questions: [
           { id: 'childrenReceivedTreatment', type: 'yesno', label: 'Have any of the children received medical or mental health treatment due to Dominick\'s death?', rogRef: 'SI-16' },
@@ -983,7 +1091,7 @@ const CLIENTS = {
       },
       {
         id: 'damages',
-        title: 'K. Losses & Damages',
+        title: 'O. Losses & Damages',
         description: 'Please describe how Dominick\'s death has affected the children.',
         questions: [
           { id: 'lossOfLoveDescription', type: 'textarea', label: 'Describe the loss of love, companionship, comfort, care, assistance, protection, affection, society, and moral support the children have experienced since Dominick\'s death' },
@@ -998,7 +1106,7 @@ const CLIENTS = {
       },
       {
         id: 'investigation',
-        title: 'L. Investigation & Evidence',
+        title: 'P. Investigation & Evidence',
         description: 'These questions ask about witnesses, photographs, and other evidence.',
         questions: [
           { id: 'hasAnyInvestigationInfo', type: 'yesno', label: 'Do you have any knowledge of witnesses, evidence, photographs, or other materials relevant to the children\'s relationship with Dominick?' },
@@ -1018,7 +1126,7 @@ const CLIENTS = {
       },
       {
         id: 'documents-checklist',
-        title: 'M. Documents Checklist',
+        title: 'Q. Documents Checklist',
         description: 'Please check all documents you have access to and can provide for the children. This helps us know what evidence we can use to support the case.',
         questions: [
           { id: 'docs_identity', type: 'checklist', label: 'Identity & Relationship Documents', options: [
@@ -1066,8 +1174,26 @@ const CLIENTS = {
         ]
       },
       {
+        id: 'funeral-expenses',
+        title: 'R. Funeral & Burial Expenses',
+        questions: [
+          { id: 'hasFuneralExpenses', type: 'yesno', label: 'Were there funeral and burial expenses?' },
+          { id: 'funeralExpenses', type: 'repeatable', label: 'Funeral and burial expenses', showIf: 'hasFuneralExpenses', fields: [
+            { id: 'expenseType', type: 'text', label: 'Type of expense' },
+            { id: 'amount', type: 'text', label: 'Amount' },
+            { id: 'paidBy', type: 'text', label: 'Paid by whom?' }
+          ]},
+          { id: 'hasOtherDeathExpenses', type: 'yesno', label: 'Are there any other expenses related to Dominick\'s death?' },
+          { id: 'otherDeathExpensesList', type: 'repeatable', label: 'Other death-related expenses', showIf: 'hasOtherDeathExpenses', fields: [
+            { id: 'expenseType', type: 'text', label: 'Type of expense' },
+            { id: 'amount', type: 'text', label: 'Amount' },
+            { id: 'description', type: 'text', label: 'Description' }
+          ]}
+        ]
+      },
+      {
         id: 'final-questions',
-        title: 'N. Final Questions',
+        title: 'S. Final Questions',
         questions: [
           { id: 'responsePrepHelpers', type: 'repeatable', label: 'Who helped you prepare these responses? (List each person who prepared or assisted)', rogRef: '1.1', fields: [
             { id: 'name', type: 'text', label: 'Name' },
