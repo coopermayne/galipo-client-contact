@@ -767,31 +767,11 @@ const CLIENTS = {
           { id: 'adam_correctedName', type: 'text', label: 'Please provide the correct spelling of Adam\'s name', showIf: 'adam_nameNeedsCorrection' },
           { id: 'adam_dateOfBirth', type: 'date', label: 'Date of birth', rogRef: '2.2' },
           { id: 'adam_placeOfBirth', type: 'text', label: 'Place of birth (city, state, country)', rogRef: '2.2' },
-          { id: 'adam_currentAddress', type: 'textarea', label: 'Current address (street, city, state, zip)', rogRef: '2.5(a)' },
-          { id: 'adam_biologicalMother', type: 'text', label: 'Full name of Adam\'s biological mother', rogRef: 'SI-1' },
-          { id: 'adam_biologicalMotherAddress', type: 'textarea', label: 'Biological mother\'s address', rogRef: 'SI-1' },
-          { id: 'adam_biologicalMotherPhone', type: 'text', label: 'Biological mother\'s phone number', rogRef: 'SI-1' },
-          { id: 'adam_biologicalMotherEmail', type: 'text', label: 'Biological mother\'s email address', rogRef: 'SI-1' },
+          { id: 'adam_hasDifferentAddress', type: 'yesno', label: 'Does Adam live at a different address than the one you provided in Section A?' },
+          { id: 'adam_currentAddress', type: 'textarea', label: 'Adam\'s current address (street, city, state, zip)', showIf: 'adam_hasDifferentAddress', rogRef: '2.5(a)' },
+          { id: 'adam_isBiologicalMother', type: 'yesno', label: 'Are you Adam\'s biological mother?', rogRef: 'SI-1' },
           { id: 'adam_isDominickBiologicalFather', type: 'yesno', label: 'Is Dominick Alvarado Adam\'s biological father?', rogRef: 'SI-7' },
           { id: 'adam_biologicalFatherFacts', type: 'textarea', label: 'State all facts that support Adam being Dominick\'s natural child', rogRef: 'SI-11' },
-          { id: 'adam_hasBeenAdopted', type: 'yesno', label: 'Has Adam ever been adopted?', rogRef: 'SI-10' },
-          { id: 'adam_adoptionDetails', type: 'repeatable', label: 'Adoption details', showIf: 'adam_hasBeenAdopted', rogRef: 'SI-10', fields: [
-            { id: 'name', type: 'text', label: 'Name of adopting person' },
-            { id: 'address', type: 'textarea', label: 'Address' },
-            { id: 'phone', type: 'text', label: 'Phone number' },
-            { id: 'email', type: 'text', label: 'Email address' },
-            { id: 'adoptionDate', type: 'date', label: 'Date of adoption' }
-          ]},
-          { id: 'adam_parentalRightsTerminated', type: 'yesno', label: 'Were Dominick\'s parental rights over Adam ever terminated or limited?', rogRef: 'SI-8' },
-          { id: 'adam_parentalRightsDates', type: 'textarea', label: 'If yes, state the dates when those rights were terminated or limited', showIf: 'adam_parentalRightsTerminated', rogRef: 'SI-8' },
-          { id: 'adam_custodialRightsTerminated', type: 'yesno', label: 'Were Dominick\'s custodial rights over Adam ever terminated or limited?', rogRef: 'SI-9' },
-          { id: 'adam_custodialRightsDates', type: 'textarea', label: 'If yes, state the dates when those rights were terminated or limited', showIf: 'adam_custodialRightsTerminated', rogRef: 'SI-9' },
-          { id: 'adam_hasCourtProceedings', type: 'yesno', label: 'Have there been any court proceedings relating to Adam (custody, dependency, etc.)?', rogRef: 'SI-17' },
-          { id: 'adam_courtProceedings', type: 'repeatable', label: 'Court proceedings', showIf: 'adam_hasCourtProceedings', rogRef: 'SI-17', fields: [
-            { id: 'venue', type: 'text', label: 'Court venue (county and state)' },
-            { id: 'caseNumber', type: 'text', label: 'Case number' },
-            { id: 'description', type: 'text', label: 'Description of proceeding' }
-          ]},
           { id: 'adam_hasAttendedSchool', type: 'yesno', label: 'Has Adam attended any schools?', rogRef: 'SI-2' },
           { id: 'adam_schools', type: 'repeatable', label: 'Schools attended', showIf: 'adam_hasAttendedSchool', rogRef: 'SI-2', fields: [
             { id: 'name', type: 'text', label: 'School name' },
@@ -812,31 +792,11 @@ const CLIENTS = {
           { id: 'adalynn_correctedName', type: 'text', label: 'Please provide the correct spelling of Adalynn\'s name', showIf: 'adalynn_nameNeedsCorrection' },
           { id: 'adalynn_dateOfBirth', type: 'date', label: 'Date of birth', rogRef: '2.2' },
           { id: 'adalynn_placeOfBirth', type: 'text', label: 'Place of birth (city, state, country)', rogRef: '2.2' },
-          { id: 'adalynn_currentAddress', type: 'textarea', label: 'Current address (street, city, state, zip)', rogRef: '2.5(a)' },
-          { id: 'adalynn_biologicalMother', type: 'text', label: 'Full name of Adalynn\'s biological mother', rogRef: 'SI-1' },
-          { id: 'adalynn_biologicalMotherAddress', type: 'textarea', label: 'Biological mother\'s address', rogRef: 'SI-1' },
-          { id: 'adalynn_biologicalMotherPhone', type: 'text', label: 'Biological mother\'s phone number', rogRef: 'SI-1' },
-          { id: 'adalynn_biologicalMotherEmail', type: 'text', label: 'Biological mother\'s email address', rogRef: 'SI-1' },
+          { id: 'adalynn_hasDifferentAddress', type: 'yesno', label: 'Does Adalynn live at a different address than the one you provided in Section A?' },
+          { id: 'adalynn_currentAddress', type: 'textarea', label: 'Adalynn\'s current address (street, city, state, zip)', showIf: 'adalynn_hasDifferentAddress', rogRef: '2.5(a)' },
+          { id: 'adalynn_isBiologicalMother', type: 'yesno', label: 'Are you Adalynn\'s biological mother?', rogRef: 'SI-1' },
           { id: 'adalynn_isDominickBiologicalFather', type: 'yesno', label: 'Is Dominick Alvarado Adalynn\'s biological father?', rogRef: 'SI-7' },
           { id: 'adalynn_biologicalFatherFacts', type: 'textarea', label: 'State all facts that support Adalynn being Dominick\'s natural child', rogRef: 'SI-11' },
-          { id: 'adalynn_hasBeenAdopted', type: 'yesno', label: 'Has Adalynn ever been adopted?', rogRef: 'SI-10' },
-          { id: 'adalynn_adoptionDetails', type: 'repeatable', label: 'Adoption details', showIf: 'adalynn_hasBeenAdopted', rogRef: 'SI-10', fields: [
-            { id: 'name', type: 'text', label: 'Name of adopting person' },
-            { id: 'address', type: 'textarea', label: 'Address' },
-            { id: 'phone', type: 'text', label: 'Phone number' },
-            { id: 'email', type: 'text', label: 'Email address' },
-            { id: 'adoptionDate', type: 'date', label: 'Date of adoption' }
-          ]},
-          { id: 'adalynn_parentalRightsTerminated', type: 'yesno', label: 'Were Dominick\'s parental rights over Adalynn ever terminated or limited?', rogRef: 'SI-8' },
-          { id: 'adalynn_parentalRightsDates', type: 'textarea', label: 'If yes, state the dates when those rights were terminated or limited', showIf: 'adalynn_parentalRightsTerminated', rogRef: 'SI-8' },
-          { id: 'adalynn_custodialRightsTerminated', type: 'yesno', label: 'Were Dominick\'s custodial rights over Adalynn ever terminated or limited?', rogRef: 'SI-9' },
-          { id: 'adalynn_custodialRightsDates', type: 'textarea', label: 'If yes, state the dates when those rights were terminated or limited', showIf: 'adalynn_custodialRightsTerminated', rogRef: 'SI-9' },
-          { id: 'adalynn_hasCourtProceedings', type: 'yesno', label: 'Have there been any court proceedings relating to Adalynn (custody, dependency, etc.)?', rogRef: 'SI-17' },
-          { id: 'adalynn_courtProceedings', type: 'repeatable', label: 'Court proceedings', showIf: 'adalynn_hasCourtProceedings', rogRef: 'SI-17', fields: [
-            { id: 'venue', type: 'text', label: 'Court venue (county and state)' },
-            { id: 'caseNumber', type: 'text', label: 'Case number' },
-            { id: 'description', type: 'text', label: 'Description of proceeding' }
-          ]},
           { id: 'adalynn_hasAttendedSchool', type: 'yesno', label: 'Has Adalynn attended any schools?', rogRef: 'SI-2' },
           { id: 'adalynn_schools', type: 'repeatable', label: 'Schools attended', showIf: 'adalynn_hasAttendedSchool', rogRef: 'SI-2', fields: [
             { id: 'name', type: 'text', label: 'School name' },
@@ -857,31 +817,11 @@ const CLIENTS = {
           { id: 'xzavier_correctedName', type: 'text', label: 'Please provide the correct spelling of Xzavier\'s name', showIf: 'xzavier_nameNeedsCorrection' },
           { id: 'xzavier_dateOfBirth', type: 'date', label: 'Date of birth', rogRef: '2.2' },
           { id: 'xzavier_placeOfBirth', type: 'text', label: 'Place of birth (city, state, country)', rogRef: '2.2' },
-          { id: 'xzavier_currentAddress', type: 'textarea', label: 'Current address (street, city, state, zip)', rogRef: '2.5(a)' },
-          { id: 'xzavier_biologicalMother', type: 'text', label: 'Full name of Xzavier\'s biological mother', rogRef: 'SI-1' },
-          { id: 'xzavier_biologicalMotherAddress', type: 'textarea', label: 'Biological mother\'s address', rogRef: 'SI-1' },
-          { id: 'xzavier_biologicalMotherPhone', type: 'text', label: 'Biological mother\'s phone number', rogRef: 'SI-1' },
-          { id: 'xzavier_biologicalMotherEmail', type: 'text', label: 'Biological mother\'s email address', rogRef: 'SI-1' },
+          { id: 'xzavier_hasDifferentAddress', type: 'yesno', label: 'Does Xzavier live at a different address than the one you provided in Section A?' },
+          { id: 'xzavier_currentAddress', type: 'textarea', label: 'Xzavier\'s current address (street, city, state, zip)', showIf: 'xzavier_hasDifferentAddress', rogRef: '2.5(a)' },
+          { id: 'xzavier_isBiologicalMother', type: 'yesno', label: 'Are you Xzavier\'s biological mother?', rogRef: 'SI-1' },
           { id: 'xzavier_isDominickBiologicalFather', type: 'yesno', label: 'Is Dominick Alvarado Xzavier\'s biological father?', rogRef: 'SI-7' },
           { id: 'xzavier_biologicalFatherFacts', type: 'textarea', label: 'State all facts that support Xzavier being Dominick\'s natural child', rogRef: 'SI-11' },
-          { id: 'xzavier_hasBeenAdopted', type: 'yesno', label: 'Has Xzavier ever been adopted?', rogRef: 'SI-10' },
-          { id: 'xzavier_adoptionDetails', type: 'repeatable', label: 'Adoption details', showIf: 'xzavier_hasBeenAdopted', rogRef: 'SI-10', fields: [
-            { id: 'name', type: 'text', label: 'Name of adopting person' },
-            { id: 'address', type: 'textarea', label: 'Address' },
-            { id: 'phone', type: 'text', label: 'Phone number' },
-            { id: 'email', type: 'text', label: 'Email address' },
-            { id: 'adoptionDate', type: 'date', label: 'Date of adoption' }
-          ]},
-          { id: 'xzavier_parentalRightsTerminated', type: 'yesno', label: 'Were Dominick\'s parental rights over Xzavier ever terminated or limited?', rogRef: 'SI-8' },
-          { id: 'xzavier_parentalRightsDates', type: 'textarea', label: 'If yes, state the dates when those rights were terminated or limited', showIf: 'xzavier_parentalRightsTerminated', rogRef: 'SI-8' },
-          { id: 'xzavier_custodialRightsTerminated', type: 'yesno', label: 'Were Dominick\'s custodial rights over Xzavier ever terminated or limited?', rogRef: 'SI-9' },
-          { id: 'xzavier_custodialRightsDates', type: 'textarea', label: 'If yes, state the dates when those rights were terminated or limited', showIf: 'xzavier_custodialRightsTerminated', rogRef: 'SI-9' },
-          { id: 'xzavier_hasCourtProceedings', type: 'yesno', label: 'Have there been any court proceedings relating to Xzavier (custody, dependency, etc.)?', rogRef: 'SI-17' },
-          { id: 'xzavier_courtProceedings', type: 'repeatable', label: 'Court proceedings', showIf: 'xzavier_hasCourtProceedings', rogRef: 'SI-17', fields: [
-            { id: 'venue', type: 'text', label: 'Court venue (county and state)' },
-            { id: 'caseNumber', type: 'text', label: 'Case number' },
-            { id: 'description', type: 'text', label: 'Description of proceeding' }
-          ]},
           { id: 'xzavier_hasAttendedSchool', type: 'yesno', label: 'Has Xzavier attended any schools?', rogRef: 'SI-2' },
           { id: 'xzavier_schools', type: 'repeatable', label: 'Schools attended', showIf: 'xzavier_hasAttendedSchool', rogRef: 'SI-2', fields: [
             { id: 'name', type: 'text', label: 'School name' },
@@ -902,31 +842,11 @@ const CLIENTS = {
           { id: 'noah_correctedName', type: 'text', label: 'Please provide the correct spelling of Noah\'s name', showIf: 'noah_nameNeedsCorrection' },
           { id: 'noah_dateOfBirth', type: 'date', label: 'Date of birth', rogRef: '2.2' },
           { id: 'noah_placeOfBirth', type: 'text', label: 'Place of birth (city, state, country)', rogRef: '2.2' },
-          { id: 'noah_currentAddress', type: 'textarea', label: 'Current address (street, city, state, zip)', rogRef: '2.5(a)' },
-          { id: 'noah_biologicalMother', type: 'text', label: 'Full name of Noah\'s biological mother', rogRef: 'SI-1' },
-          { id: 'noah_biologicalMotherAddress', type: 'textarea', label: 'Biological mother\'s address', rogRef: 'SI-1' },
-          { id: 'noah_biologicalMotherPhone', type: 'text', label: 'Biological mother\'s phone number', rogRef: 'SI-1' },
-          { id: 'noah_biologicalMotherEmail', type: 'text', label: 'Biological mother\'s email address', rogRef: 'SI-1' },
+          { id: 'noah_hasDifferentAddress', type: 'yesno', label: 'Does Noah live at a different address than the one you provided in Section A?' },
+          { id: 'noah_currentAddress', type: 'textarea', label: 'Noah\'s current address (street, city, state, zip)', showIf: 'noah_hasDifferentAddress', rogRef: '2.5(a)' },
+          { id: 'noah_isBiologicalMother', type: 'yesno', label: 'Are you Noah\'s biological mother?', rogRef: 'SI-1' },
           { id: 'noah_isDominickBiologicalFather', type: 'yesno', label: 'Is Dominick Alvarado Noah\'s biological father?', rogRef: 'SI-7' },
           { id: 'noah_biologicalFatherFacts', type: 'textarea', label: 'State all facts that support Noah being Dominick\'s natural child', rogRef: 'SI-11' },
-          { id: 'noah_hasBeenAdopted', type: 'yesno', label: 'Has Noah ever been adopted?', rogRef: 'SI-10' },
-          { id: 'noah_adoptionDetails', type: 'repeatable', label: 'Adoption details', showIf: 'noah_hasBeenAdopted', rogRef: 'SI-10', fields: [
-            { id: 'name', type: 'text', label: 'Name of adopting person' },
-            { id: 'address', type: 'textarea', label: 'Address' },
-            { id: 'phone', type: 'text', label: 'Phone number' },
-            { id: 'email', type: 'text', label: 'Email address' },
-            { id: 'adoptionDate', type: 'date', label: 'Date of adoption' }
-          ]},
-          { id: 'noah_parentalRightsTerminated', type: 'yesno', label: 'Were Dominick\'s parental rights over Noah ever terminated or limited?', rogRef: 'SI-8' },
-          { id: 'noah_parentalRightsDates', type: 'textarea', label: 'If yes, state the dates when those rights were terminated or limited', showIf: 'noah_parentalRightsTerminated', rogRef: 'SI-8' },
-          { id: 'noah_custodialRightsTerminated', type: 'yesno', label: 'Were Dominick\'s custodial rights over Noah ever terminated or limited?', rogRef: 'SI-9' },
-          { id: 'noah_custodialRightsDates', type: 'textarea', label: 'If yes, state the dates when those rights were terminated or limited', showIf: 'noah_custodialRightsTerminated', rogRef: 'SI-9' },
-          { id: 'noah_hasCourtProceedings', type: 'yesno', label: 'Have there been any court proceedings relating to Noah (custody, dependency, etc.)?', rogRef: 'SI-17' },
-          { id: 'noah_courtProceedings', type: 'repeatable', label: 'Court proceedings', showIf: 'noah_hasCourtProceedings', rogRef: 'SI-17', fields: [
-            { id: 'venue', type: 'text', label: 'Court venue (county and state)' },
-            { id: 'caseNumber', type: 'text', label: 'Case number' },
-            { id: 'description', type: 'text', label: 'Description of proceeding' }
-          ]},
           { id: 'noah_hasAttendedSchool', type: 'yesno', label: 'Has Noah attended any schools?', rogRef: 'SI-2' },
           { id: 'noah_schools', type: 'repeatable', label: 'Schools attended', showIf: 'noah_hasAttendedSchool', rogRef: 'SI-2', fields: [
             { id: 'name', type: 'text', label: 'School name' },
@@ -947,31 +867,11 @@ const CLIENTS = {
           { id: 'nathan_correctedName', type: 'text', label: 'Please provide the correct spelling of Nathan\'s name', showIf: 'nathan_nameNeedsCorrection' },
           { id: 'nathan_dateOfBirth', type: 'date', label: 'Date of birth', rogRef: '2.2' },
           { id: 'nathan_placeOfBirth', type: 'text', label: 'Place of birth (city, state, country)', rogRef: '2.2' },
-          { id: 'nathan_currentAddress', type: 'textarea', label: 'Current address (street, city, state, zip)', rogRef: '2.5(a)' },
-          { id: 'nathan_biologicalMother', type: 'text', label: 'Full name of Nathan\'s biological mother', rogRef: 'SI-1' },
-          { id: 'nathan_biologicalMotherAddress', type: 'textarea', label: 'Biological mother\'s address', rogRef: 'SI-1' },
-          { id: 'nathan_biologicalMotherPhone', type: 'text', label: 'Biological mother\'s phone number', rogRef: 'SI-1' },
-          { id: 'nathan_biologicalMotherEmail', type: 'text', label: 'Biological mother\'s email address', rogRef: 'SI-1' },
+          { id: 'nathan_hasDifferentAddress', type: 'yesno', label: 'Does Nathan live at a different address than the one you provided in Section A?' },
+          { id: 'nathan_currentAddress', type: 'textarea', label: 'Nathan\'s current address (street, city, state, zip)', showIf: 'nathan_hasDifferentAddress', rogRef: '2.5(a)' },
+          { id: 'nathan_isBiologicalMother', type: 'yesno', label: 'Are you Nathan\'s biological mother?', rogRef: 'SI-1' },
           { id: 'nathan_isDominickBiologicalFather', type: 'yesno', label: 'Is Dominick Alvarado Nathan\'s biological father?', rogRef: 'SI-7' },
           { id: 'nathan_biologicalFatherFacts', type: 'textarea', label: 'State all facts that support Nathan being Dominick\'s natural child', rogRef: 'SI-11' },
-          { id: 'nathan_hasBeenAdopted', type: 'yesno', label: 'Has Nathan ever been adopted?', rogRef: 'SI-10' },
-          { id: 'nathan_adoptionDetails', type: 'repeatable', label: 'Adoption details', showIf: 'nathan_hasBeenAdopted', rogRef: 'SI-10', fields: [
-            { id: 'name', type: 'text', label: 'Name of adopting person' },
-            { id: 'address', type: 'textarea', label: 'Address' },
-            { id: 'phone', type: 'text', label: 'Phone number' },
-            { id: 'email', type: 'text', label: 'Email address' },
-            { id: 'adoptionDate', type: 'date', label: 'Date of adoption' }
-          ]},
-          { id: 'nathan_parentalRightsTerminated', type: 'yesno', label: 'Were Dominick\'s parental rights over Nathan ever terminated or limited?', rogRef: 'SI-8' },
-          { id: 'nathan_parentalRightsDates', type: 'textarea', label: 'If yes, state the dates when those rights were terminated or limited', showIf: 'nathan_parentalRightsTerminated', rogRef: 'SI-8' },
-          { id: 'nathan_custodialRightsTerminated', type: 'yesno', label: 'Were Dominick\'s custodial rights over Nathan ever terminated or limited?', rogRef: 'SI-9' },
-          { id: 'nathan_custodialRightsDates', type: 'textarea', label: 'If yes, state the dates when those rights were terminated or limited', showIf: 'nathan_custodialRightsTerminated', rogRef: 'SI-9' },
-          { id: 'nathan_hasCourtProceedings', type: 'yesno', label: 'Have there been any court proceedings relating to Nathan (custody, dependency, etc.)?', rogRef: 'SI-17' },
-          { id: 'nathan_courtProceedings', type: 'repeatable', label: 'Court proceedings', showIf: 'nathan_hasCourtProceedings', rogRef: 'SI-17', fields: [
-            { id: 'venue', type: 'text', label: 'Court venue (county and state)' },
-            { id: 'caseNumber', type: 'text', label: 'Case number' },
-            { id: 'description', type: 'text', label: 'Description of proceeding' }
-          ]},
           { id: 'nathan_hasAttendedSchool', type: 'yesno', label: 'Has Nathan attended any schools?', rogRef: 'SI-2' },
           { id: 'nathan_schools', type: 'repeatable', label: 'Schools attended', showIf: 'nathan_hasAttendedSchool', rogRef: 'SI-2', fields: [
             { id: 'name', type: 'text', label: 'School name' },
@@ -983,8 +883,35 @@ const CLIENTS = {
         ]
       },
       {
+        id: 'parental-rights',
+        title: 'G. Parental Rights & Court Proceedings',
+        description: 'These questions ask about adoption, parental rights, and any court proceedings involving the children.',
+        questions: [
+          { id: 'anyChildAdopted', type: 'yesno', label: 'Have any of the children ever been adopted?', rogRef: 'SI-10' },
+          { id: 'adoptionDetails', type: 'repeatable', label: 'Adoption details', showIf: 'anyChildAdopted', rogRef: 'SI-10', fields: [
+            { id: 'child', type: 'text', label: 'Which child was adopted?' },
+            { id: 'name', type: 'text', label: 'Name of adopting person' },
+            { id: 'address', type: 'textarea', label: 'Address' },
+            { id: 'phone', type: 'text', label: 'Phone number' },
+            { id: 'email', type: 'text', label: 'Email address' },
+            { id: 'adoptionDate', type: 'date', label: 'Date of adoption' }
+          ]},
+          { id: 'parentalRightsTerminated', type: 'yesno', label: 'Were Dominick\'s parental rights over any of the children ever terminated or limited?', rogRef: 'SI-8' },
+          { id: 'parentalRightsDetails', type: 'textarea', label: 'Which children and what dates were those rights terminated or limited?', showIf: 'parentalRightsTerminated', rogRef: 'SI-8' },
+          { id: 'custodialRightsTerminated', type: 'yesno', label: 'Were Dominick\'s custodial rights over any of the children ever terminated or limited?', rogRef: 'SI-9' },
+          { id: 'custodialRightsDetails', type: 'textarea', label: 'Which children and what dates were those rights terminated or limited?', showIf: 'custodialRightsTerminated', rogRef: 'SI-9' },
+          { id: 'hasCourtProceedings', type: 'yesno', label: 'Have there been any court proceedings relating to the children (custody, dependency, etc.)?', rogRef: 'SI-17' },
+          { id: 'courtProceedings', type: 'repeatable', label: 'Court proceedings', showIf: 'hasCourtProceedings', rogRef: 'SI-17', fields: [
+            { id: 'children', type: 'text', label: 'Which children were involved?' },
+            { id: 'venue', type: 'text', label: 'Court venue (county and state)' },
+            { id: 'caseNumber', type: 'text', label: 'Case number' },
+            { id: 'description', type: 'text', label: 'Description of proceeding' }
+          ]}
+        ]
+      },
+      {
         id: 'living-with-dominick',
-        title: 'G. Children Living with Dominick',
+        title: 'H. Children Living with Dominick',
         description: 'These questions ask about the periods when the children lived with Dominick. You may answer for all children together if they lived with him during the same periods.',
         questions: [
           { id: 'childrenLivedWithDominick', type: 'yesno', label: 'Did any of the children ever live with Dominick?', rogRef: 'SI-5' },
@@ -1006,7 +933,7 @@ const CLIENTS = {
       },
       {
         id: 'relationship-combined',
-        title: 'H. Children\'s Relationship with Dominick',
+        title: 'I. Children\'s Relationship with Dominick',
         description: 'These questions ask about all the children\'s relationship with their father Dominick. You may answer for all children together.',
         questions: [
           { id: 'activitiesTogether', type: 'textarea', label: 'Describe the activities that the children and Dominick enjoyed doing together as father and children', rogRef: 'SI-12' },
@@ -1028,38 +955,6 @@ const CLIENTS = {
             { id: 'location', type: 'text', label: 'Location' },
             { id: 'dates', type: 'text', label: 'Dates' },
             { id: 'children', type: 'text', label: 'Which children went?' }
-          ]}
-        ]
-      },
-      {
-        id: 'financial-support',
-        title: 'I. Financial Support from Dominick',
-        description: 'These questions ask about financial support Dominick provided to the children.',
-        questions: [
-          { id: 'receivedAnySupport', type: 'yesno', label: 'Did Dominick ever provide any of the children with financial support, purchase items for them, or provide any services?' },
-          { id: 'receivedMoney', type: 'yesno', label: 'Did Dominick provide any of the children with money in the 10 years before his death?', showIf: 'receivedAnySupport', rogRef: 'SI-3' },
-          { id: 'moneyProvided', type: 'repeatable', label: 'Money provided by Dominick', showIf: 'receivedMoney', rogRef: 'SI-3', fields: [
-            { id: 'child', type: 'text', label: 'Which child/children received this money?' },
-            { id: 'year', type: 'text', label: 'Year' },
-            { id: 'amount', type: 'text', label: 'Amount provided' },
-            { id: 'purpose', type: 'text', label: 'What was it for?' },
-            { id: 'howProvided', type: 'text', label: 'How was it provided? (cash, check, Venmo, etc.)' }
-          ]},
-          { id: 'receivedPurchases', type: 'yesno', label: 'Did Dominick purchase anything for any of the children in the 10 years before his death?', showIf: 'receivedAnySupport', rogRef: 'SI-4' },
-          { id: 'purchaseDetails', type: 'repeatable', label: 'Items purchased by Dominick', showIf: 'receivedPurchases', rogRef: 'SI-4', fields: [
-            { id: 'child', type: 'text', label: 'Which child/children was this purchased for?' },
-            { id: 'item', type: 'text', label: 'Item description' },
-            { id: 'cost', type: 'text', label: 'Approximate cost' },
-            { id: 'date', type: 'text', label: 'Approximate date of purchase' }
-          ]},
-          { id: 'providedMedicalInsurance', type: 'yesno', label: 'Did Dominick purchase medical insurance for any of the children?', showIf: 'receivedAnySupport' },
-          { id: 'medicalInsuranceDetails', type: 'textarea', label: 'Describe the medical insurance coverage Dominick provided', showIf: 'providedMedicalInsurance' },
-          { id: 'hadLifeInsurance', type: 'yesno', label: 'Did Dominick have life insurance with any of the children as beneficiaries?' },
-          { id: 'lifeInsuranceDetails', type: 'repeatable', label: 'Life insurance policies', showIf: 'hadLifeInsurance', fields: [
-            { id: 'company', type: 'text', label: 'Insurance company' },
-            { id: 'policyNumber', type: 'text', label: 'Policy number (if known)' },
-            { id: 'beneficiaries', type: 'text', label: 'Which children are beneficiaries?' },
-            { id: 'amount', type: 'text', label: 'Coverage amount (if known)' }
           ]}
         ]
       },
@@ -1095,23 +990,15 @@ const CLIENTS = {
           { id: 'howLifeChanged', type: 'textarea', label: 'How have the children\'s daily lives changed since Dominick\'s death?' },
           { id: 'emotionalImpact', type: 'textarea', label: 'Describe the emotional and psychological impact of Dominick\'s death on the children' },
           { id: 'futureLosses', type: 'textarea', label: 'Describe any future losses the children will experience (e.g., Dominick not being present for graduations, weddings, birthdays, other milestones)' },
+          { id: 'financialSupportDescription', type: 'textarea', label: 'Describe how Dominick financially supported the children (money for expenses, purchasing items, paying for activities, etc.)', rogRef: 'SI-3,SI-4' },
+          { id: 'otherSupportDescription', type: 'textarea', label: 'Describe other ways Dominick supported the children in their daily lives (picking them up from school, cooking for them, helping with homework, taking them to appointments, etc.)' },
           { id: 'economicDamages', type: 'textarea', label: 'Describe any economic damages the children have suffered or will suffer due to Dominick\'s death' },
           { id: 'nonEconomicDamages', type: 'textarea', label: 'Describe any non-economic damages the children have suffered (pain, suffering, emotional distress, etc.)' }
         ]
       },
       {
-        id: 'incident-questions',
-        title: 'L. Questions About Contributing to the Incident',
-        description: 'These are standard legal questions asking whether the children played any role in causing Dominick\'s death. As minor children, they almost certainly did not - so you will likely answer "No" to all of these.',
-        questions: [
-          { id: 'wasActingAsAgent', type: 'yesno', label: 'At the time of Dominick\'s death, were any of the children acting as an agent or employee for any person in a way that contributed to causing the incident?', rogRef: '2.11' },
-          { id: 'hadDisability', type: 'yesno', label: 'Did any of the children have any physical, emotional, or mental disability or condition that contributed to CAUSING Dominick\'s death?', rogRef: '2.12' },
-          { id: 'usedSubstances', type: 'yesno', label: 'Within 24 hours before Dominick\'s death, did any of the children use any substance (alcohol, drugs, medication) that contributed to CAUSING the incident?', rogRef: '2.13' }
-        ]
-      },
-      {
         id: 'investigation',
-        title: 'M. Investigation & Evidence',
+        title: 'L. Investigation & Evidence',
         description: 'These questions ask about witnesses, photographs, and other evidence.',
         questions: [
           { id: 'hasAnyInvestigationInfo', type: 'yesno', label: 'Do you have any knowledge of witnesses, evidence, photographs, or other materials relevant to the children\'s relationship with Dominick?' },
@@ -1131,7 +1018,7 @@ const CLIENTS = {
       },
       {
         id: 'documents-checklist',
-        title: 'N. Documents Checklist',
+        title: 'M. Documents Checklist',
         description: 'Please check all documents you have access to and can provide for the children. This helps us know what evidence we can use to support the case.',
         questions: [
           { id: 'docs_identity', type: 'checklist', label: 'Identity & Relationship Documents', options: [
@@ -1149,8 +1036,7 @@ const CLIENTS = {
           { id: 'docs_financial', type: 'checklist', label: 'Financial Documents', options: [
             { id: 'financialSupport', label: 'Documents showing financial support from Dominick (2013-2023)' },
             { id: 'purchaseReceipts', label: 'Receipts for items Dominick purchased for children' },
-            { id: 'medicalInsurance', label: 'Documents showing medical insurance from Dominick' },
-            { id: 'lifeInsurance', label: 'Life insurance policies naming children as beneficiaries' }
+            { id: 'medicalInsurance', label: 'Documents showing medical insurance from Dominick' }
           ]},
           { id: 'docs_medical', type: 'checklist', label: 'Medical Documents', options: [
             { id: 'medicalTreatment', label: 'Medical treatment records related to Dominick\'s death' },
@@ -1181,7 +1067,7 @@ const CLIENTS = {
       },
       {
         id: 'final-questions',
-        title: 'O. Final Questions',
+        title: 'N. Final Questions',
         questions: [
           { id: 'responsePrepHelpers', type: 'repeatable', label: 'Who helped you prepare these responses? (List each person who prepared or assisted)', rogRef: '1.1', fields: [
             { id: 'name', type: 'text', label: 'Name' },
@@ -1230,31 +1116,11 @@ const CLIENTS = {
           { id: 'caleb_correctedName', type: 'text', label: 'Please provide the correct spelling of Caleb\'s name', showIf: 'caleb_nameNeedsCorrection' },
           { id: 'caleb_dateOfBirth', type: 'date', label: 'Date of birth', rogRef: '2.2' },
           { id: 'caleb_placeOfBirth', type: 'text', label: 'Place of birth (city, state, country)', rogRef: '2.2' },
-          { id: 'caleb_currentAddress', type: 'textarea', label: 'Current address (street, city, state, zip)', rogRef: '2.5(a)' },
-          { id: 'caleb_biologicalMother', type: 'text', label: 'Full name of Caleb\'s biological mother', rogRef: 'SI-1' },
-          { id: 'caleb_biologicalMotherAddress', type: 'textarea', label: 'Biological mother\'s address', rogRef: 'SI-1' },
-          { id: 'caleb_biologicalMotherPhone', type: 'text', label: 'Biological mother\'s phone number', rogRef: 'SI-1' },
-          { id: 'caleb_biologicalMotherEmail', type: 'text', label: 'Biological mother\'s email address', rogRef: 'SI-1' },
+          { id: 'caleb_hasDifferentAddress', type: 'yesno', label: 'Does Caleb live at a different address than the one you provided in Section A?' },
+          { id: 'caleb_currentAddress', type: 'textarea', label: 'Caleb\'s current address (street, city, state, zip)', showIf: 'caleb_hasDifferentAddress', rogRef: '2.5(a)' },
+          { id: 'caleb_isBiologicalMother', type: 'yesno', label: 'Are you Caleb\'s biological mother?', rogRef: 'SI-1' },
           { id: 'caleb_isDominickBiologicalFather', type: 'yesno', label: 'Is Dominick Alvarado Caleb\'s biological father?', rogRef: 'SI-7' },
           { id: 'caleb_biologicalFatherFacts', type: 'textarea', label: 'State all facts that support Caleb being Dominick\'s natural child', rogRef: 'SI-11' },
-          { id: 'caleb_hasBeenAdopted', type: 'yesno', label: 'Has Caleb ever been adopted?', rogRef: 'SI-10' },
-          { id: 'caleb_adoptionDetails', type: 'repeatable', label: 'Adoption details', showIf: 'caleb_hasBeenAdopted', rogRef: 'SI-10', fields: [
-            { id: 'name', type: 'text', label: 'Name of adopting person' },
-            { id: 'address', type: 'textarea', label: 'Address' },
-            { id: 'phone', type: 'text', label: 'Phone number' },
-            { id: 'email', type: 'text', label: 'Email address' },
-            { id: 'adoptionDate', type: 'date', label: 'Date of adoption' }
-          ]},
-          { id: 'caleb_parentalRightsTerminated', type: 'yesno', label: 'Were Dominick\'s parental rights over Caleb ever terminated or limited?', rogRef: 'SI-8' },
-          { id: 'caleb_parentalRightsDates', type: 'textarea', label: 'If yes, state the dates when those rights were terminated or limited', showIf: 'caleb_parentalRightsTerminated', rogRef: 'SI-8' },
-          { id: 'caleb_custodialRightsTerminated', type: 'yesno', label: 'Were Dominick\'s custodial rights over Caleb ever terminated or limited?', rogRef: 'SI-9' },
-          { id: 'caleb_custodialRightsDates', type: 'textarea', label: 'If yes, state the dates when those rights were terminated or limited', showIf: 'caleb_custodialRightsTerminated', rogRef: 'SI-9' },
-          { id: 'caleb_hasCourtProceedings', type: 'yesno', label: 'Have there been any court proceedings relating to Caleb (custody, dependency, etc.)?', rogRef: 'SI-17' },
-          { id: 'caleb_courtProceedings', type: 'repeatable', label: 'Court proceedings', showIf: 'caleb_hasCourtProceedings', rogRef: 'SI-17', fields: [
-            { id: 'venue', type: 'text', label: 'Court venue (county and state)' },
-            { id: 'caseNumber', type: 'text', label: 'Case number' },
-            { id: 'description', type: 'text', label: 'Description of proceeding' }
-          ]},
           { id: 'caleb_hasAttendedSchool', type: 'yesno', label: 'Has Caleb attended any schools?', rogRef: 'SI-2' },
           { id: 'caleb_schools', type: 'repeatable', label: 'Schools attended', showIf: 'caleb_hasAttendedSchool', rogRef: 'SI-2', fields: [
             { id: 'name', type: 'text', label: 'School name' },
@@ -1266,8 +1132,33 @@ const CLIENTS = {
         ]
       },
       {
+        id: 'parental-rights',
+        title: 'C. Parental Rights & Court Proceedings',
+        description: 'These questions ask about adoption, parental rights, and any court proceedings involving Caleb.',
+        questions: [
+          { id: 'hasBeenAdopted', type: 'yesno', label: 'Has Caleb ever been adopted?', rogRef: 'SI-10' },
+          { id: 'adoptionDetails', type: 'repeatable', label: 'Adoption details', showIf: 'hasBeenAdopted', rogRef: 'SI-10', fields: [
+            { id: 'name', type: 'text', label: 'Name of adopting person' },
+            { id: 'address', type: 'textarea', label: 'Address' },
+            { id: 'phone', type: 'text', label: 'Phone number' },
+            { id: 'email', type: 'text', label: 'Email address' },
+            { id: 'adoptionDate', type: 'date', label: 'Date of adoption' }
+          ]},
+          { id: 'parentalRightsTerminated', type: 'yesno', label: 'Were Dominick\'s parental rights over Caleb ever terminated or limited?', rogRef: 'SI-8' },
+          { id: 'parentalRightsDetails', type: 'textarea', label: 'State the dates when those rights were terminated or limited', showIf: 'parentalRightsTerminated', rogRef: 'SI-8' },
+          { id: 'custodialRightsTerminated', type: 'yesno', label: 'Were Dominick\'s custodial rights over Caleb ever terminated or limited?', rogRef: 'SI-9' },
+          { id: 'custodialRightsDetails', type: 'textarea', label: 'State the dates when those rights were terminated or limited', showIf: 'custodialRightsTerminated', rogRef: 'SI-9' },
+          { id: 'hasCourtProceedings', type: 'yesno', label: 'Have there been any court proceedings relating to Caleb (custody, dependency, etc.)?', rogRef: 'SI-17' },
+          { id: 'courtProceedings', type: 'repeatable', label: 'Court proceedings', showIf: 'hasCourtProceedings', rogRef: 'SI-17', fields: [
+            { id: 'venue', type: 'text', label: 'Court venue (county and state)' },
+            { id: 'caseNumber', type: 'text', label: 'Case number' },
+            { id: 'description', type: 'text', label: 'Description of proceeding' }
+          ]}
+        ]
+      },
+      {
         id: 'living-with-dominick',
-        title: 'C. Living with Dominick',
+        title: 'D. Living with Dominick',
         description: 'These questions ask about periods when Caleb lived with Dominick.',
         questions: [
           { id: 'calebLivedWithDominick', type: 'yesno', label: 'Did Caleb ever live with Dominick?', rogRef: 'SI-5' },
@@ -1288,7 +1179,7 @@ const CLIENTS = {
       },
       {
         id: 'relationship',
-        title: 'D. Caleb\'s Relationship with Dominick',
+        title: 'E. Caleb\'s Relationship with Dominick',
         description: 'These questions ask about Caleb\'s relationship with his father Dominick.',
         questions: [
           { id: 'activitiesTogether', type: 'textarea', label: 'Describe the activities that Caleb and Dominick enjoyed doing together as father and son', rogRef: 'SI-12' },
@@ -1308,35 +1199,6 @@ const CLIENTS = {
           { id: 'vacationDetails', type: 'repeatable', label: 'Vacations/trips with Dominick', showIf: 'hadVacations', fields: [
             { id: 'location', type: 'text', label: 'Location' },
             { id: 'dates', type: 'text', label: 'Dates' }
-          ]}
-        ]
-      },
-      {
-        id: 'financial-support',
-        title: 'E. Financial Support from Dominick',
-        description: 'These questions ask about financial support Dominick provided to Caleb.',
-        questions: [
-          { id: 'receivedAnySupport', type: 'yesno', label: 'Did Dominick ever provide Caleb with financial support, purchase items for him, or provide any services?' },
-          { id: 'receivedMoney', type: 'yesno', label: 'Did Dominick provide Caleb with money in the 10 years before his death?', showIf: 'receivedAnySupport', rogRef: 'SI-3' },
-          { id: 'moneyProvided', type: 'repeatable', label: 'Money provided by Dominick', showIf: 'receivedMoney', rogRef: 'SI-3', fields: [
-            { id: 'year', type: 'text', label: 'Year' },
-            { id: 'amount', type: 'text', label: 'Amount provided' },
-            { id: 'purpose', type: 'text', label: 'What was it for?' },
-            { id: 'howProvided', type: 'text', label: 'How was it provided? (cash, check, Venmo, etc.)' }
-          ]},
-          { id: 'receivedPurchases', type: 'yesno', label: 'Did Dominick purchase anything for Caleb in the 10 years before his death?', showIf: 'receivedAnySupport', rogRef: 'SI-4' },
-          { id: 'purchaseDetails', type: 'repeatable', label: 'Items purchased by Dominick', showIf: 'receivedPurchases', rogRef: 'SI-4', fields: [
-            { id: 'item', type: 'text', label: 'Item description' },
-            { id: 'cost', type: 'text', label: 'Approximate cost' },
-            { id: 'date', type: 'text', label: 'Approximate date of purchase' }
-          ]},
-          { id: 'providedMedicalInsurance', type: 'yesno', label: 'Did Dominick purchase medical insurance for Caleb?', showIf: 'receivedAnySupport' },
-          { id: 'medicalInsuranceDetails', type: 'textarea', label: 'Describe the medical insurance coverage Dominick provided', showIf: 'providedMedicalInsurance' },
-          { id: 'hadLifeInsurance', type: 'yesno', label: 'Did Dominick have life insurance with Caleb as a beneficiary?' },
-          { id: 'lifeInsuranceDetails', type: 'repeatable', label: 'Life insurance policies', showIf: 'hadLifeInsurance', fields: [
-            { id: 'company', type: 'text', label: 'Insurance company' },
-            { id: 'policyNumber', type: 'text', label: 'Policy number (if known)' },
-            { id: 'amount', type: 'text', label: 'Coverage amount (if known)' }
           ]}
         ]
       },
@@ -1370,23 +1232,15 @@ const CLIENTS = {
           { id: 'howLifeChanged', type: 'textarea', label: 'How has Caleb\'s daily life changed since Dominick\'s death?' },
           { id: 'emotionalImpact', type: 'textarea', label: 'Describe the emotional and psychological impact of Dominick\'s death on Caleb' },
           { id: 'futureLosses', type: 'textarea', label: 'Describe any future losses Caleb will experience (e.g., Dominick not being present for graduations, birthdays, other milestones)' },
+          { id: 'financialSupportDescription', type: 'textarea', label: 'Describe how Dominick financially supported Caleb (money for expenses, purchasing items, paying for activities, etc.)', rogRef: 'SI-3,SI-4' },
+          { id: 'otherSupportDescription', type: 'textarea', label: 'Describe other ways Dominick supported Caleb in his daily life (picking him up from school, cooking for him, helping with homework, taking him to appointments, etc.)' },
           { id: 'economicDamages', type: 'textarea', label: 'Describe any economic damages Caleb has suffered or will suffer due to Dominick\'s death' },
           { id: 'nonEconomicDamages', type: 'textarea', label: 'Describe any non-economic damages Caleb has suffered (pain, suffering, emotional distress, etc.)' }
         ]
       },
       {
-        id: 'incident-questions',
-        title: 'H. Questions About Contributing to the Incident',
-        description: 'These are standard legal questions asking whether Caleb played any role in causing Dominick\'s death. As a minor child, he almost certainly did not - so you will likely answer "No" to all of these.',
-        questions: [
-          { id: 'wasActingAsAgent', type: 'yesno', label: 'At the time of Dominick\'s death, was Caleb acting as an agent or employee for any person in a way that contributed to causing the incident?', rogRef: '2.11' },
-          { id: 'hadDisability', type: 'yesno', label: 'Did Caleb have any physical, emotional, or mental disability or condition that contributed to CAUSING Dominick\'s death?', rogRef: '2.12' },
-          { id: 'usedSubstances', type: 'yesno', label: 'Within 24 hours before Dominick\'s death, did Caleb use any substance (alcohol, drugs, medication) that contributed to CAUSING the incident?', rogRef: '2.13' }
-        ]
-      },
-      {
         id: 'investigation',
-        title: 'I. Investigation & Evidence',
+        title: 'H. Investigation & Evidence',
         description: 'These questions ask about witnesses, photographs, and other evidence.',
         questions: [
           { id: 'hasAnyInvestigationInfo', type: 'yesno', label: 'Do you have any knowledge of witnesses, evidence, photographs, or other materials relevant to Caleb\'s relationship with Dominick?' },
@@ -1406,7 +1260,7 @@ const CLIENTS = {
       },
       {
         id: 'documents-checklist',
-        title: 'J. Documents Checklist',
+        title: 'I. Documents Checklist',
         description: 'Please check all documents you have access to and can provide for Caleb. This helps us know what evidence we can use to support the case.',
         questions: [
           { id: 'docs_identity', type: 'checklist', label: 'Identity & Relationship Documents', options: [
@@ -1424,8 +1278,7 @@ const CLIENTS = {
           { id: 'docs_financial', type: 'checklist', label: 'Financial Documents', options: [
             { id: 'financialSupport', label: 'Documents showing financial support from Dominick (2013-2023)' },
             { id: 'purchaseReceipts', label: 'Receipts for items Dominick purchased for Caleb' },
-            { id: 'medicalInsurance', label: 'Documents showing medical insurance from Dominick' },
-            { id: 'lifeInsurance', label: 'Life insurance policies naming Caleb as beneficiary' }
+            { id: 'medicalInsurance', label: 'Documents showing medical insurance from Dominick' }
           ]},
           { id: 'docs_medical', type: 'checklist', label: 'Medical Documents', options: [
             { id: 'medicalTreatment', label: 'Medical treatment records related to Dominick\'s death' },
@@ -1456,7 +1309,7 @@ const CLIENTS = {
       },
       {
         id: 'final-questions',
-        title: 'K. Final Questions',
+        title: 'J. Final Questions',
         questions: [
           { id: 'responsePrepHelpers', type: 'repeatable', label: 'Who helped you prepare these responses? (List each person who prepared or assisted)', rogRef: '1.1', fields: [
             { id: 'name', type: 'text', label: 'Name' },
