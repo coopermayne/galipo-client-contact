@@ -2393,7 +2393,7 @@ function ClientForm() {
 
   // If not authenticated or can't access this client, show login
   if (!isAuthenticated || !canAccessClient(clientSlug)) {
-    return <LoginForm title="Client Portal" clientSlug={clientSlug} />
+    return <LoginForm title={`${client.clientName} Portal`} clientSlug={clientSlug} />
   }
 
   return <ClientFormContent />
