@@ -125,6 +125,8 @@ export async function requireAuth(
 // Add new clients here when you add them to the frontend
 const CLIENT_PASSWORD_PREFIXES: Record<string, string> = {
   'alvarado-pool': 'Pool',
+  'alvarado-watkins': 'Watkins',
+  'alvarado-vasquez': 'Vasquez',
 }
 
 // Validate passwords against environment variables

@@ -2406,8 +2406,29 @@ function ClientForm() {
 function ReviewDashboardContent() {
   const [clientsData, setClientsData] = useState({})
   const [isLoading, setIsLoading] = useState(true)
+  const [copiedSlug, setCopiedSlug] = useState(null)
   const navigate = useNavigate()
   const { authFetch } = useAuth()
+
+  const handleCopyCredentials = useCallback(async (e, slug) => {
+    e.stopPropagation() // Prevent navigation to client detail
+    const client = CLIENTS[slug]
+    if (!client) return
+
+    const baseUrl = window.location.origin + window.location.pathname
+    const link = `${baseUrl}#/${slug}`
+    const password = `${client.passwordPrefix}2026`
+
+    const text = `Link: ${link}\nPassword: ${password}`
+
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopiedSlug(slug)
+      setTimeout(() => setCopiedSlug(null), 2000)
+    } catch (err) {
+      console.error('Failed to copy:', err)
+    }
+  }, [])
 
   useEffect(() => {
     const loadClientsData = async () => {
@@ -2540,8 +2561,27 @@ function ReviewDashboardContent() {
                       />
                     </div>
                   </div>
-                  <div className="mt-3 flex items-center text-blue-600 text-sm font-medium">
-                    <Eye size={16} className="mr-1" /> View Responses
+                  <div className="mt-3 flex items-center justify-between">
+                    <div className="flex items-center text-blue-600 text-sm font-medium">
+                      <Eye size={16} className="mr-1" /> View Responses
+                    </div>
+                    <button
+                      onClick={(e) => handleCopyCredentials(e, client.slug)}
+                      className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-md transition-colors"
+                      title="Copy link and password"
+                    >
+                      {copiedSlug === client.slug ? (
+                        <>
+                          <CheckCircle size={16} className="text-green-600" />
+                          <span className="text-green-600">Copied!</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy size={16} />
+                          <span>Copy Login</span>
+                        </>
+                      )}
+                    </button>
                   </div>
                 </div>
               ))}
